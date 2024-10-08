@@ -139,6 +139,6 @@ def remove_expense(index):
     save_data()
     return redirect(url_for('index'))
 
-# Run the app
+# Run the app - This is a test
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)

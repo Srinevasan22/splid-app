@@ -27,7 +27,17 @@
     <div class="container">
         <h1 class="text-center my-4">Expense Tracker</h1>
 
-        <!-- Participants Header -->
+        <!-- Add Participant Form -->
+        <div class="card my-4">
+            <div class="card-body">
+                <form action="/add_participant" method="POST" class="form-inline my-3">
+                    <input type="text" name="name" placeholder="Participant Name" class="form-control mr-2" required>
+                    <button type="submit" class="btn btn-primary">Add Participant</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Participant List -->
         <h2>Participants</h2>
         <ul class="list-group">
             {% for name, details in participants.items() %}
@@ -39,16 +49,6 @@
                 {% endif %}
             {% endfor %}
         </ul>
-
-        <!-- Add Participant Form -->
-        <div class="card my-4">
-            <div class="card-body">
-                <form action="/add_participant" method="POST" class="form-inline my-3">
-                    <input type="text" name="name" placeholder="Participant Name" class="form-control mr-2" required>
-                    <button type="submit" class="btn btn-primary">Add Participant</button>
-                </form>
-            </div>
-        </div>
 
         <!-- Add Expense Form -->
         <div class="card my-4">

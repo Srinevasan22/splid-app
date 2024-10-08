@@ -16,7 +16,6 @@
             }
         }
 
-        // Function to open the modal and pass participant name
         function openRemoveModal(participantName) {
             document.getElementById('participant-name').innerText = participantName;
             document.getElementById('remove-participant-form').action = '/remove_participant/' + participantName;
@@ -28,17 +27,7 @@
     <div class="container">
         <h1 class="text-center my-4">Expense Tracker</h1>
 
-        <!-- Add Participant Form -->
-        <div class="card my-4">
-            <div class="card-body">
-                <form action="/add_participant" method="POST" class="form-inline my-3">
-                    <input type="text" name="name" placeholder="Participant Name" class="form-control mr-2" required>
-                    <button type="submit" class="btn btn-primary">Add Participant</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Participant List -->
+        <!-- Participants Header -->
         <h2>Participants</h2>
         <ul class="list-group">
             {% for name, details in participants.items() %}
@@ -50,6 +39,16 @@
                 {% endif %}
             {% endfor %}
         </ul>
+
+        <!-- Add Participant Form -->
+        <div class="card my-4">
+            <div class="card-body">
+                <form action="/add_participant" method="POST" class="form-inline my-3">
+                    <input type="text" name="name" placeholder="Participant Name" class="form-control mr-2" required>
+                    <button type="submit" class="btn btn-primary">Add Participant</button>
+                </form>
+            </div>
+        </div>
 
         <!-- Add Expense Form -->
         <div class="card my-4">
@@ -77,7 +76,7 @@
                     <div class="form-group">
                         <label for="category">Category</label>
                         <select name="category" class="form-control" required>
-                            <!-- Add categories -->
+                            <!-- Add categories here -->
                         </select>
                     </div>
 

@@ -1,10 +1,11 @@
 import json
-from flask import Flask, render_template, request, redirect, url_for, send_file
+from flask import Flask, render_template, request, redirect, url_for, send_file, flash
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import io
 
 app = Flask(__name__)
+app.secret_key = 'your_secret_key'  # Required for flash messages
 
 DATA_FILE = 'expense_data.json'
 
@@ -16,11 +17,17 @@ def load_data():
             return data.get('participants', {}), data.get('expenses', [])
     except FileNotFoundError:
         return {}, []
+    except json.JSONDecodeError:
+        flash('Error loading data: JSON is corrupted.', 'danger')
+        return {}, []
 
 # Save data to file
-def save_data():
-    with open(DATA_FILE, 'w') as f:
-        json.dump({'participants': participants, 'expenses': expenses}, f)
+def save_data(participants, expenses):
+    try:
+        with open(DATA_FILE, 'w') as f:
+            json.dump({'participants': participants, 'expenses': expenses}, f)
+    except Exception as e:
+        flash(f"Error saving data: {e}", 'danger')
 
 # Load the data
 participants, expenses = load_data()
@@ -36,34 +43,49 @@ def add_participant():
     name = request.form['name']
     if name not in participants:
         participants[name] = {'balance': 0.0, 'removed': False}
-    save_data()
+        save_data(participants, expenses)
+        flash(f'Participant {name} added successfully!', 'success')
+    else:
+        flash(f'Participant {name} already exists!', 'warning')
     return redirect(url_for('index'))
 
 # Add expense
 @app.route('/add_expense', methods=['POST'])
 def add_expense():
-    name = request.form['payer']
-    amount = float(request.form['amount'])
-    category = request.form['category']
-    split_type = request.form['split_type']
+    try:
+        name = request.form['payer']
+        amount = float(request.form['amount'])
+        if amount < 0:
+            flash('Amount must be positive.', 'warning')
+            return redirect(url_for('index'))
 
-    if split_type == "equal":
-        split_amount = amount / len([p for p in participants if not participants[p]['removed']])
-        for participant in participants:
-            if not participants[participant]['removed']:
-                participants[participant]['balance'] += round(split_amount, 2)
-    elif split_type == "unequal":
-        shares = {}
-        for participant in participants:
-            share = float(request.form.get(f"share_{participant}", 0))
-            shares[participant] = share
-        total_shares = sum(shares.values())
-        for participant, share in shares.items():
-            if not participants[participant]['removed']:
-                participants[participant]['balance'] += round((amount * (share / total_shares)), 2)
+        category = request.form['category']
+        split_type = request.form['split_type']
 
-    expenses.append({"name": name, "amount": round(amount, 2), "category": category})
-    save_data()
+        if split_type == "equal":
+            split_amount = amount / len([p for p in participants if not participants[p]['removed']])
+            for participant in participants:
+                if not participants[participant]['removed']:
+                    participants[participant]['balance'] += round(split_amount, 2)
+        elif split_type == "unequal":
+            shares = {}
+            for participant in participants:
+                share = float(request.form.get(f"share_{participant}", 0))
+                if share < 0:
+                    flash('Shares must be non-negative.', 'warning')
+                    return redirect(url_for('index'))
+                shares[participant] = share
+            total_shares = sum(shares.values())
+            for participant, share in shares.items():
+                if not participants[participant]['removed']:
+                    participants[participant]['balance'] += round((amount * (share / total_shares)), 2)
+
+        expenses.append({"name": name, "amount": round(amount, 2), "category": category})
+        save_data(participants, expenses)
+        flash('Expense added successfully!', 'success')
+    except ValueError:
+        flash('Invalid input. Please check your entries.', 'danger')
+
     return redirect(url_for('index'))
 
 # Generate PDF report
@@ -113,7 +135,8 @@ def clear_data():
     global participants, expenses
     participants = {}
     expenses = []
-    save_data()
+    save_data(participants, expenses)
+    flash('All data cleared successfully!', 'success')
     return redirect(url_for('index'))
 
 # Remove participant
@@ -124,9 +147,9 @@ def remove_participant(name):
         if not keep_expenses:
             expenses[:] = [expense for expense in expenses if expense['name'] != name]
         participants[name]['removed'] = True
-        save_data()
+        save_data(participants, expenses)
+        flash(f'Participant {name} removed successfully!', 'success')
     return redirect(url_for('index'))
-
 
 # Remove an expense
 @app.route('/remove_expense/<int:index>')
@@ -136,7 +159,8 @@ def remove_expense(index):
         name = expense_to_remove["name"]
         amount = expense_to_remove["amount"]
         participants[name]['balance'] -= round(amount, 2)
-    save_data()
+        save_data(participants, expenses)
+        flash('Expense removed successfully!', 'success')
     return redirect(url_for('index'))
 
 # Run the app

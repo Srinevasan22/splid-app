@@ -9,11 +9,7 @@
         function toggleShares() {
             const splitType = document.querySelector('input[name="split_type"]:checked').value;
             const sharesSection = document.getElementById('shares-section');
-            if (splitType === 'unequal') {
-                sharesSection.style.display = 'block';
-            } else {
-                sharesSection.style.display = 'none';
-            }
+            sharesSection.style.display = splitType === 'unequal' ? 'block' : 'none';
         }
 
         function openRemoveModal(participantName) {
@@ -27,18 +23,17 @@
     <div class="container">
         <h1 class="text-center my-4">Expense Tracker</h1>
 
-        <!-- Participant List -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
         <h2>Participants</h2>
-        <ul class="list-group">
-            {% for name, details in participants.items() %}
-                {% if not details['removed'] %}
-                    <li class="list-group-item">
-                        {{ name }} - Balance: ${{ details['balance'] }}
-                        <button class="btn btn-danger btn-sm" onclick="openRemoveModal('{{ name }}')">Remove</button>
-                    </li>
-                {% endif %}
-            {% endfor %}
-        </ul>
 
         <!-- Add Participant Form -->
         <div class="card my-4">
@@ -50,6 +45,17 @@
             </div>
         </div>
 
+        <!-- Participant List -->
+        <ul class="list-group">
+            {% for name, details in participants.items() %}
+                {% if not details['removed'] %}
+                    <li class="list-group-item">
+                        {{ name }} - Balance: ${{ details['balance'] }}
+                        <button class="btn btn-danger btn-sm" onclick="openRemoveModal('{{ name }}')">Remove</button>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
 
         <!-- Add Expense Form -->
         <div class="card my-4">
@@ -77,7 +83,9 @@
                     <div class="form-group">
                         <label for="category">Category</label>
                         <select name="category" class="form-control" required>
-                            <!-- Add categories here -->
+                            <!-- Add categories here, e.g., -->
+                            <option value="Utilities">Utilities</option>
+                            <option value="Food & Dining">Food & Dining</option>
                         </select>
                     </div>
 
@@ -159,8 +167,5 @@
             </div>
         </div>
     </div>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

@@ -41,6 +41,13 @@ def get_data():
     ]
     return jsonify(data)
 
+# Webhook endpoint to handle GitHub webhook requests
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    data = request.json  # Get the JSON data from the request
+    app.logger.info("Webhook received: %s", data)  # Log the received data
+    return '', 200  # Respond with a 200 status code
+
 # Add participant
 @app.route('/add_participant', methods=['POST'])
 def add_participant():
@@ -149,6 +156,6 @@ def remove_expense(index):
     save_data()
     return redirect(url_for('index'))
 
-# Run the app
+# Run the app -------------Test
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

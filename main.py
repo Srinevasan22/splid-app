@@ -1,11 +1,11 @@
 import json
+import os
+import hmac
+import hashlib
 from flask import Flask, render_template, request, redirect, url_for, send_file, jsonify
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import io
-import hmac
-import hashlib
-import os  # Import os to execute shell commands
 
 app = Flask(__name__)
 
@@ -39,6 +39,7 @@ def index():
 # API endpoint to return data
 @app.route('/api/data', methods=['GET'])
 def get_data():
+    # Sample data to return
     data = [
         {'name': 'Item 1', 'value': 'Value 1'},
         {'name': 'Item 2', 'value': 'Value 2'},
@@ -53,10 +54,12 @@ def webhook():
     if signature is None:
         return '', 400  # Bad Request
 
+    # Compute the HMAC digest
     sha_name, signature = signature.split('=')
     if sha_name != 'sha1':
         return '', 400  # Bad Request
 
+    # Calculate the HMAC of the payload
     mac = hmac.new(secret, request.data, hashlib.sha1)
     if not hmac.compare_digest('sha1=' + mac.hexdigest(), signature):
         return '', 403  # Forbidden
@@ -64,8 +67,9 @@ def webhook():
     data = request.json  # Get the JSON data from the request
     app.logger.info("Webhook received: %s", data)  # Log the received data
 
-    # Execute the shell command to pull the latest changes
-    os.system("cd ~/splid_app && git pull origin main")  # Make sure the path is correct
+    # Automatically pull the latest changes
+    os.system('cd ~/splid_app && git pull origin main')  # Adjust path if necessary
+    os.system('systemctl restart gunicorn')  # Restart Gunicorn to apply changes
 
     return '', 200  # Respond with a 200 status code
 
@@ -177,6 +181,6 @@ def remove_expense(index):
     save_data()
     return redirect(url_for('index'))
 
-# Run the app -----------  Commit test 10
+# Run the app
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

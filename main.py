@@ -3,10 +3,15 @@ from flask import Flask, render_template, request, redirect, url_for, send_file,
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import io
+import hmac
+import hashlib
 
 app = Flask(__name__)
 
 DATA_FILE = 'expense_data.json'
+
+# Define your secret key
+secret = b'eIMR5amQ3ezShLwOOalX76aTRZBhp5kj'  # Your actual secret
 
 # Load data from file
 def load_data():
@@ -44,6 +49,20 @@ def get_data():
 # Webhook endpoint to handle GitHub webhook requests
 @app.route('/webhook', methods=['POST'])
 def webhook():
+    signature = request.headers.get('X-Hub-Signature')
+    if signature is None:
+        return '', 400  # Bad Request
+
+    # Compute the HMAC digest
+    sha_name, signature = signature.split('=')
+    if sha_name != 'sha1':
+        return '', 400  # Bad Request
+
+    # Calculate the HMAC of the payload
+    mac = hmac.new(secret, request.data, hashlib.sha1)
+    if not hmac.compare_digest('sha1=' + mac.hexdigest(), signature):
+        return '', 403  # Forbidden
+
     data = request.json  # Get the JSON data from the request
     app.logger.info("Webhook received: %s", data)  # Log the received data
     return '', 200  # Respond with a 200 status code

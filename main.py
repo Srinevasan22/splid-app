@@ -171,6 +171,8 @@ def remove_expense(index):
     save_data()
     return redirect(url_for('index'))
 
-# Run the app  -----------------  Commit Test 15
+# Run the app-------------Commit test 16
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.environ.get('PORT', 5000))  # Default to 5000 if no PORT provided
+    print(f"App running on port {port}")  # Log the port for debugging
+    app.run(host='0.0.0.0', port=port, debug=True)

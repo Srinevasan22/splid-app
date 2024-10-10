@@ -12,12 +12,12 @@ requiredFiles = [".replit", "replit.nix"]
 
 [deployment]
 run = ["python3", "main.py"]
-deploymentTarget = "cloudrun"
 
 [[ports]]
-localPort = 5000
-externalPort = 5000
-
-[[ports]]
-localPort = 8080
+localPort = 80
 externalPort = 80
+
+[env]
+FLASK_APP = "main.py"
+FLASK_ENV = "development"
+PORT = "80"

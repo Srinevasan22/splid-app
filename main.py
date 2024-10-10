@@ -37,6 +37,11 @@ participants, expenses = load_data()
 def index():
     return render_template('index.html', participants=participants, expenses=expenses, enumerate=enumerate)
 
+# API endpoint to return participants and expenses
+@app.route('/api/data', methods=['GET'])
+def get_data():
+    return jsonify(participants=participants, expenses=expenses)
+
 # Webhook endpoint to handle GitHub webhook requests
 @app.route('/webhook', methods=['POST'])
 def webhook():
@@ -171,7 +176,7 @@ def remove_expense(index):
     save_data()
     return redirect(url_for('index'))
 
-# Run the app-------------Commit test 16
+# Run the app-------------Commit test 17
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))  # Default to 5000 if no PORT provided
     print(f"App running on port {port}")  # Log the port for debugging

@@ -25,6 +25,7 @@ def load_data():
 
 # Save data to file
 def save_data():
+    global participants, expenses  # Ensure to declare these as global
     with open(DATA_FILE, 'w') as f:
         json.dump({'participants': participants, 'expenses': expenses}, f)
 
@@ -35,17 +36,6 @@ participants, expenses = load_data()
 @app.route('/')
 def index():
     return render_template('index.html', participants=participants, expenses=expenses, enumerate=enumerate)
-
-# API endpoint to return data
-@app.route('/api/data', methods=['GET'])
-def get_data():
-    # Sample data to return
-    data = [
-        {'name': 'Item 1', 'value': 'Value 1'},
-        {'name': 'Item 2', 'value': 'Value 2'},
-        {'name': 'Item 3', 'value': 'Value 3'}
-    ]
-    return jsonify(data)
 
 # Webhook endpoint to handle GitHub webhook requests
 @app.route('/webhook', methods=['POST'])
@@ -181,6 +171,6 @@ def remove_expense(index):
     save_data()
     return redirect(url_for('index'))
 
-# Run the app--------------------- Comit Test 12
+# Run the app  -----------------  Commit Test 13
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

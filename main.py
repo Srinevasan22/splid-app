@@ -3,11 +3,15 @@ import os
 import hmac
 import hashlib
 from flask import Flask, render_template, request, redirect, url_for, send_file, jsonify
+from flask_cors import CORS  # Import CORS
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import io
 
 app = Flask(__name__)
+
+# Enable CORS for your WordPress domain
+CORS(app, resources={r"/*": {"origins": "https://srinevasan.com"}})  # Adjust the origin as needed
 
 DATA_FILE = 'expense_data.json'
 
@@ -176,7 +180,7 @@ def remove_expense(index):
     save_data()
     return redirect(url_for('index'))
 
-# Run the app-------------Commit test 17
+# Run the app -------------Commit test 17
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))  # Default to 5000 if no PORT provided
     print(f"App running on port {port}")  # Log the port for debugging

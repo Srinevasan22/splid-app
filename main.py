@@ -15,7 +15,11 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "https://srinevasan.com"}})
 
 # Enable HTTPS with Flask-Talisman
-Talisman(app, force_https=True)
+Talisman(app, force_https=True, content_security_policy={
+    'default-src': ['\'self\'', 'https://maxcdn.bootstrapcdn.com', 'https://ajax.googleapis.com'],
+    'script-src': ['\'self\'', 'https://ajax.googleapis.com', '\'unsafe-inline\''],
+    'style-src': ['\'self\'', 'https://maxcdn.bootstrapcdn.com', '\'unsafe-inline\'']
+})
 
 DATA_FILE = 'expense_data.json'
 

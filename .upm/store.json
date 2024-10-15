@@ -1,1 +1,1 @@
-{"version":2,"languages":{"python3-poetry":{"specfileHash":"676dd971d7d4d726361437019e111925","lockfileHash":"27c6450b16c160c1dd9a435fc7872c16","guessedImports":["Flask","reportlab"],"guessedImportsHash":"ec273c19b66affca120bd56b65ac4f7b"}}}
+{"version":2,"languages":{"python3-poetry":{"specfileHash":"5369dd82e39a3f1331ac530a4951966b","lockfileHash":"2f36e5f81342de33bfa05d4bd922466e","guessedImports":["Flask-Cors","Flask","reportlab"],"guessedImportsHash":"80324b53bfea1033f8e799ba79cb0c5a"}}}

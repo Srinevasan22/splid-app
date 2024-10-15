@@ -3,7 +3,8 @@ import os
 import hmac
 import hashlib
 from flask import Flask, render_template, request, redirect, url_for, send_file, jsonify
-from flask_cors import CORS  # Import CORS
+from flask_cors import CORS
+from flask_talisman import Talisman  # Import Flask-Talisman
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 import io
@@ -11,12 +12,15 @@ import io
 app = Flask(__name__)
 
 # Enable CORS for your WordPress domain
-CORS(app, resources={r"/*": {"origins": "https://srinevasan.com"}})  # Adjust the origin as needed
+CORS(app, resources={r"/*": {"origins": "https://srinevasan.com"}})
+
+# Enable HTTPS with Flask-Talisman
+Talisman(app, force_https=True)
 
 DATA_FILE = 'expense_data.json'
 
 # Define your secret key
-secret = b'eIMR5amQ3ezShLwOOalX76aTRZBhp5kj'  # Your actual secret
+secret = b'eIMR5amQ3ezShLwOOalX76aTRZBhp5kj'
 
 # Load data from file
 def load_data():
@@ -29,7 +33,7 @@ def load_data():
 
 # Save data to file
 def save_data():
-    global participants, expenses  # Ensure to declare these as global
+    global participants, expenses
     with open(DATA_FILE, 'w') as f:
         json.dump({'participants': participants, 'expenses': expenses}, f)
 
@@ -63,12 +67,12 @@ def webhook():
     if not hmac.compare_digest('sha1=' + mac.hexdigest(), signature):
         return '', 403  # Forbidden
 
-    data = request.json  # Get the JSON data from the request
-    app.logger.info("Webhook received: %s", data)  # Log the received data
+    data = request.json
+    app.logger.info("Webhook received: %s", data)
 
     # Automatically pull the latest changes
-    os.system('cd ~/splid_app && git pull origin main')  # Adjust path if necessary
-    os.system('systemctl restart gunicorn')  # Restart Gunicorn to apply changes
+    os.system('cd ~/splid_app && git pull origin main')
+    os.system('systemctl restart gunicorn')
 
     return '', 200  # Respond with a 200 status code
 
@@ -180,8 +184,8 @@ def remove_expense(index):
     save_data()
     return redirect(url_for('index'))
 
-# Run the app -------------Commit test 17
+# Run the app
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))  # Default to 5000 if no PORT provided
-    print(f"App running on port {port}")  # Log the port for debugging
-    app.run(host='0.0.0.0', port=port, debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    print(f"App running on port {port}")
+    app.run(host='0.0.0.0', port=port, ssl_context=('path/to/cert.pem', 'path/to/key.pem'))  # Update paths to your certificate

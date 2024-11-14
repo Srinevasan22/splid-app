@@ -1,4 +1,0 @@
-flask
-reportlab
-flask-talisman
-flask-cors

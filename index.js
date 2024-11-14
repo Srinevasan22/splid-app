@@ -5,7 +5,7 @@ const PORT = 3000; // Explicitly set the port to 3000
 
 // Access the GitHub secret and MongoDB URI from environment variables
 const mySecret = process.env['github_secret'];
-const mongoURI = process.env['MONGODB_URI'] || 'mongodb://localhost:27017/yourDatabaseName';
+const mongoURI = process.env['MONGODB_URI'] || 'mongodb://localhost:27017/splidDB';
 
 // MongoDB connection
 mongoose.connect(mongoURI, {
@@ -36,7 +36,7 @@ app.get('/test-secret', (req, res) => {
   }
 });
 
-// Start the server - now on port 3000 - Test5
+// Start the server - now on port 3000 - Test6
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });

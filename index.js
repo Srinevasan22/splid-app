@@ -26,7 +26,7 @@ app.get('/test-secret', (req, res) => {
   }
 });
 
-// Start the server - now on port 3000 - Test2
+// Start the server - now on port 3000 - Test3
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });

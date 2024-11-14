@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Participant = require("../models/participantModel"); // Assuming you have a Participant model
 
 // Add a new participant
@@ -59,6 +60,11 @@ exports.deleteParticipant = async (req, res) => {
     const { participantId } = req.params;
     if (!participantId) {
       return res.status(400).json({ message: "Participant ID is required" });
+    }
+
+    // Check if participantId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(participantId)) {
+      return res.status(400).json({ message: "Invalid participant ID format" });
     }
 
     // Deleting the participant

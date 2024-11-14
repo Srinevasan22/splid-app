@@ -1,9 +1,18 @@
 const express = require('express');
+const mongoose = require('mongoose'); // Import mongoose for MongoDB connection
 const app = express();
 const PORT = 3000; // Explicitly set the port to 3000
 
 // Access the GitHub secret from the environment variables
 const mySecret = process.env['github_secret']; // Retrieves the secret from Replit's secrets environment
+
+// MongoDB connection
+mongoose.connect('mongodb://localhost:27017/yourDatabaseName', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log('Connected to MongoDB'))
+.catch(err => console.error('Failed to connect to MongoDB', err));
 
 // Middleware to parse JSON
 app.use(express.json());
@@ -26,7 +35,7 @@ app.get('/test-secret', (req, res) => {
   }
 });
 
-// Start the server - now on port 3000 - Test3
+// Start the server - now on port 3000 - Test4
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });

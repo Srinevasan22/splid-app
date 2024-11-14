@@ -1,14 +1,14 @@
 const express = require('express');
 const router = express.Router();
+const participantController = require('../controllers/participantController');
 
-// Placeholder route for getting all participants
-router.get('/', (req, res) => {
-  res.send('Get all participants');
-});
+// Route to add a new participant
+router.post('/', participantController.addParticipant);
 
-// Placeholder route for adding a participant
-router.post('/', (req, res) => {
-  res.send('Add a participant');
-});
+// Route to get all participants in a session
+router.get('/:sessionId', participantController.getParticipants);
+
+// Route to delete a participant
+router.delete('/:participantId', participantController.deleteParticipant);
 
 module.exports = router;

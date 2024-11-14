@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
   res.send('Welcome to the Splid API');
 });
 
-// Start the server - Test2
+// Start the server - Test3
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

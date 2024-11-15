@@ -54,7 +54,7 @@ app.get('/generate-sample-pdf', (req, res) => {
   doc.end();
 });
 
-// Start the server - now on port 3000 - Session3
+// Start the server - now on port 3000 - PDF
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });

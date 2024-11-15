@@ -1,4 +1,4 @@
-const Session = require('../models/sessionModel');
+const Session = require('../models/sessionModel'); // Import the Session model
 
 // Add a new session
 exports.addSession = async (req, res) => {

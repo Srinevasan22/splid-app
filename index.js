@@ -26,6 +26,9 @@ app.use('/participants', participantsRoute);
 const expensesRoute = require('./routes/expenses'); // Import expenses routes
 app.use('/expenses', expensesRoute); // Register expenses routes
 
+const sessionsRoute = require('./routes/sessions'); // Import sessions routes
+app.use('/sessions', sessionsRoute); // Register sessions routes
+
 // Health check route to verify server is running
 app.get('/health', (req, res) => {
   res.status(200).json({ message: 'API is up and running' });
@@ -54,7 +57,7 @@ app.get('/generate-sample-pdf', (req, res) => {
   doc.end();
 });
 
-// Start the server - now on port 3000 - PDF
+// Start the server - now on port 3000 - session updates
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });

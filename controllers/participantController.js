@@ -79,3 +79,120 @@ exports.deleteParticipant = async (req, res) => {
     res.status(500).json({ message: "Error deleting participant", error: error.message });
   }
 };
+
+// Update a participant
+exports.updateParticipant = async (req, res) => {
+  try {
+    const { participantId } = req.params;
+    const updates = req.body;
+
+    // Check if participantId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(participantId)) {
+      return res.status(400).json({ message: "Invalid participant ID format" });
+    }
+
+    const updatedParticipant = await Participant.findByIdAndUpdate(
+      participantId,
+      updates,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedParticipant) {
+      return res.status(404).json({ message: "Participant not found" });
+    }
+
+    res.status(200).json({
+      message: "Participant updated successfully",
+      participant: updatedParticipant,
+    });
+  } catch (error) {
+    console.error("Error updating participant:", error);
+    res.status(500).json({ message: "Error updating participant", error: error.message });
+  }
+};
+
+// Get all participants in the system
+exports.getAllParticipants = async (req, res) => {
+  try {
+    const participants = await Participant.find();
+    res.status(200).json(participants);
+  } catch (error) {
+    console.error("Error retrieving all participants:", error);
+    res.status(500).json({ message: "Error retrieving all participants", error: error.message });
+  }
+};
+
+// Get summary of expenses for a session
+exports.getSessionSummary = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+
+    if (!sessionId) {
+      return res.status(400).json({ message: "Session ID is required" });
+    }
+
+    const participants = await Participant.find({ sessionId });
+    const totalShare = participants.reduce((sum, participant) => sum + participant.share, 0);
+
+    res.status(200).json({
+      sessionId,
+      totalShare,
+      participantCount: participants.length,
+    });
+  } catch (error) {
+    console.error("Error retrieving session summary:", error);
+    res.status(500).json({ message: "Error retrieving session summary", error: error.message });
+  }
+};
+
+// Clear all participants in a session
+exports.clearSession = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+
+    if (!sessionId) {
+      return res.status(400).json({ message: "Session ID is required" });
+    }
+
+    const result = await Participant.deleteMany({ sessionId });
+
+    res.status(200).json({
+      message: "All participants cleared from the session",
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    console.error("Error clearing session:", error);
+    res.status(500).json({ message: "Error clearing session", error: error.message });
+  }
+};
+
+// Calculate each participant's share in a session
+exports.calculateShare = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    const { totalExpenses } = req.body;
+
+    if (!sessionId || !totalExpenses || typeof totalExpenses !== "number") {
+      return res.status(400).json({ message: "Session ID and valid total expenses are required" });
+    }
+
+    const participants = await Participant.find({ sessionId });
+    const totalShare = participants.reduce((sum, participant) => sum + participant.share, 0);
+
+    const calculatedShares = participants.map(participant => ({
+      name: participant.name,
+      email: participant.email,
+      share: participant.share,
+      amountOwed: (participant.share / totalShare) * totalExpenses,
+    }));
+
+    res.status(200).json({
+      sessionId,
+      totalExpenses,
+      calculatedShares,
+    });
+  } catch (error) {
+    console.error("Error calculating shares:", error);
+    res.status(500).json({ message: "Error calculating shares", error: error.message });
+  }
+};

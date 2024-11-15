@@ -36,6 +36,9 @@ app.get('/test-secret', (req, res) => {
   }
 });
 
+// Additional Routes for New Functionality
+app.use('/participants', participantsRoute); // Existing route setup for participants
+
 // Start the server - now on port 3000 - Test7
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);

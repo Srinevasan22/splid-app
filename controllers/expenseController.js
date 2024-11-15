@@ -140,7 +140,37 @@ exports.generateSessionReport = async (req, res) => {
       });
     });
 
-    res.status(200).json(reportData);
+    // Generate PDF Report
+    const doc = new PDFDocument();
+    let buffers = [];
+
+    doc.on('data', buffers.push.bind(buffers));
+    doc.on('end', () => {
+      let pdfData = Buffer.concat(buffers);
+      res.contentType('application/pdf');
+      res.send(pdfData);
+    });
+
+    doc.fontSize(20).text('Session Report', { align: 'center' });
+    doc.moveDown();
+    doc.fontSize(14).text(`Session ID: ${sessionId}`);
+    doc.text(`Total Expenses: $${reportData.totalExpenses.toFixed(2)}`);
+    doc.moveDown();
+
+    doc.fontSize(16).text('Participants Balances:');
+    Object.keys(reportData.participants).forEach(participantId => {
+      const participant = reportData.participants[participantId];
+      doc.fontSize(12).text(`${participant.name}: $${participant.balance.toFixed(2)}`);
+    });
+
+    doc.moveDown();
+    doc.fontSize(16).text('Expenses:');
+    reportData.expenses.forEach(expense => {
+      doc.fontSize(12).text(`- ${expense.description}: $${expense.amount.toFixed(2)}, Paid by ${expense.paidBy}, Split among ${expense.splitAmong.join(', ')}`);
+    });
+
+    doc.end();
+
   } catch (error) {
     console.error("Error generating report:", error);
     res.status(500).json({ message: "Error generating report", error: error.message });

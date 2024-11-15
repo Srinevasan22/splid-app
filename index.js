@@ -10,10 +10,14 @@ const mySecret = process.env['github_secret'];
 const mongoURI = process.env['MONGODB_URI'] || 'mongodb://localhost:27017/splidDB';
 
 // MongoDB connection
-mongoose.connect(mongoURI).then(() => {
+mongoose.connect(mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
   console.log('Successfully connected to MongoDB');
 }).catch(err => {
   console.error('Failed to connect to MongoDB', err);
+  process.exit(1); // Exit if MongoDB connection fails
 });
 
 // Middleware to parse JSON
@@ -65,7 +69,10 @@ app.get('/generate-sample-pdf', (req, res) => {
   doc.end();
 });
 
-// Start the server - update 2
+// Start the server and log startup status
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);
+}).on('error', (err) => {
+  console.error('Failed to start server:', err);
+  process.exit(1); // Exit if the server fails to start
 });

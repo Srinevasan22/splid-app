@@ -10,9 +10,7 @@ const mySecret = process.env['github_secret'];
 const mongoURI = process.env['MONGODB_URI'] || 'mongodb://localhost:27017/splidDB';
 
 // MongoDB connection
-mongoose.connect(mongoURI, {
-  // Removed deprecated options: useNewUrlParser and useUnifiedTopology
-}).then(() => {
+mongoose.connect(mongoURI).then(() => {
   console.log('Successfully connected to MongoDB');
 }).catch(err => {
   console.error('Failed to connect to MongoDB', err);
@@ -21,11 +19,12 @@ mongoose.connect(mongoURI, {
 // Middleware to parse JSON
 app.use(express.json());
 
-// Enable CORS for requests from https://srinevasan.com
+// Enable CORS for requests from https://srinevasan.com with single-origin header
 app.use(cors({
   origin: 'https://srinevasan.com', // Allow only requests from this origin
   methods: ['GET', 'POST', 'OPTIONS'], // Specify allowed methods
-  allowedHeaders: ['Content-Type', 'Authorization'] // Specify allowed headers
+  allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+  credentials: true // Allow credentials to be sent if necessary
 }));
 
 // Routes
@@ -66,7 +65,7 @@ app.get('/generate-sample-pdf', (req, res) => {
   doc.end();
 });
 
-// Start the server - now on port 3002
+// Start the server - update 2
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });

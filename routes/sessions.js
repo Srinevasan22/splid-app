@@ -1,11 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const sessionController = require('../controllers/sessionController'); // Import the session controller
+const Sessions = require('../models/sessions');
 
-// Route to add a new session
-router.post('/add', sessionController.addSession);
-
-// Route to get all sessions
-router.get('/', sessionController.getSessions);
+// Add session
+router.post('/add', async (req, res) => {
+    try {
+        const { name } = req.body;
+        if (!name) {
+            return res.status(400).json({ error: 'Name is required' });
+        }
+        const session = new Sessions({ name });
+        await session.save();
+        res.status(201).json({ message: 'Session added successfully', session });
+    } catch (error) {
+        res.status(500).json({ error: 'Error adding session', details: error.message });
+    }
+});
 
 module.exports = router;

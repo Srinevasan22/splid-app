@@ -1,22 +1,30 @@
-// routes/expenses.js
-
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const expenseController = require("../controllers/expenseController");
+const Expenses = require('../models/expenses');
 
-// Route to add a new expense
-router.post("/add", expenseController.addExpense);
+// Add expense
+router.post('/add', async (req, res) => {
+    try {
+        const { sessionId, description, amount } = req.body;
+        if (!sessionId || !description || !amount) {
+            return res.status(400).json({ error: 'All fields are required' });
+        }
+        const expense = new Expenses({ sessionId, description, amount });
+        await expense.save();
+        res.status(201).json({ message: 'Expense added successfully', expense });
+    } catch (error) {
+        res.status(500).json({ error: 'Error adding expense', details: error.message });
+    }
+});
 
-// Route to get all expenses for a specific session
-router.get("/session/:sessionId", expenseController.getExpenses);
-
-// Route to calculate balance for each participant in a session
-router.get("/session/:sessionId/balance", expenseController.calculateBalance);
-
-// Route to settle up between two participants
-router.post("/session/:sessionId/settle", expenseController.settleUp);
-
-// Route to generate a report for a specific session
-router.get("/session/:sessionId/report", expenseController.generateSessionReport);
+// Get expenses by session
+router.get('/:sessionId', async (req, res) => {
+    try {
+        const expenses = await Expenses.find({ sessionId: req.params.sessionId });
+        res.status(200).json(expenses);
+    } catch (error) {
+        res.status(500).json({ error: 'Error retrieving expenses', details: error.message });
+    }
+});
 
 module.exports = router;

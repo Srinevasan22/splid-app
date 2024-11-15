@@ -65,7 +65,7 @@ app.get('/generate-sample-pdf', (req, res) => {
   doc.end();
 });
 
-// Start the server - now on port 3000 - CORS update
+// Start the server - now on port 3000 - CORS update 2
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });

@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose'); // Import mongoose for MongoDB connection
 const cors = require('cors'); // Import CORS middleware
 const app = express();
-const PORT = 3001; // Explicitly set the port to 3000
+const PORT = 3001; // Explicitly set the port to 3001
 const PDFDocument = require('pdfkit'); // Import PDF generation library
 
 // Access the GitHub secret and MongoDB URI from environment variables
@@ -11,20 +11,21 @@ const mongoURI = process.env['MONGODB_URI'] || 'mongodb://localhost:27017/splidD
 
 // MongoDB connection
 mongoose.connect(mongoURI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log('Successfully connected to MongoDB'))
-.catch(err => console.error('Failed to connect to MongoDB', err));
+  // Removed deprecated options: useNewUrlParser and useUnifiedTopology
+}).then(() => {
+  console.log('Successfully connected to MongoDB');
+}).catch(err => {
+  console.error('Failed to connect to MongoDB', err);
+});
 
 // Middleware to parse JSON
 app.use(express.json());
 
 // Enable CORS for requests from https://srinevasan.com
 app.use(cors({
-    origin: 'https://srinevasan.com', // Allow only requests from this origin
-    methods: ['GET', 'POST', 'OPTIONS'], // Specify allowed methods
-    allowedHeaders: ['Content-Type', 'Authorization'] // Specify allowed headers
+  origin: 'https://srinevasan.com', // Allow only requests from this origin
+  methods: ['GET', 'POST', 'OPTIONS'], // Specify allowed methods
+  allowedHeaders: ['Content-Type', 'Authorization'] // Specify allowed headers
 }));
 
 // Routes
@@ -65,7 +66,7 @@ app.get('/generate-sample-pdf', (req, res) => {
   doc.end();
 });
 
-// Start the server - now on port 3000 - CORS update 2
+// Start the server - now on port 3001
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });

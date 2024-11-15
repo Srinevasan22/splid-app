@@ -25,6 +25,11 @@ app.use('/participants', participantsRoute);
 const expensesRoute = require('./routes/expenses'); // Import expenses routes
 app.use('/expenses', expensesRoute); // Register expenses routes
 
+// Health check route to verify server is running
+app.get('/health', (req, res) => {
+  res.status(200).json({ message: 'API is up and running' });
+});
+
 // Basic route
 app.get('/', (req, res) => {
   res.send('Welcome to the Splid API');

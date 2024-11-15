@@ -13,6 +13,6 @@ const sessionSchema = new mongoose.Schema({
 });
 
 // Create a model for the session schema
-const Session = mongoose.model('Session', sessionSchema);
+const Session = mongoose.model('session', sessionSchema); // Updated model name to lowercase and singular
 
-module.exports = Session;
+module.exports = Session; // Updated export to match the new lowercase and singular file naming

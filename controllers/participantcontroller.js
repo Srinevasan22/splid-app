@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Participant = require("../models/participantModel"); // Assuming you have a Participant model
+const Participant = require("../models/participantmodel"); // Updated to lowercase singular
 
 // Add a new participant
 exports.addParticipant = async (req, res) => {

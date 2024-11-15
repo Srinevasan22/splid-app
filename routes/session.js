@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Sessions = require('../models/sessionModel');
+const Session = require('../models/sessionmodel'); // Updated to match the new singular and lowercase naming
 
 // Add session
 router.post('/add', async (req, res) => {
@@ -9,7 +9,7 @@ router.post('/add', async (req, res) => {
         if (!name) {
             return res.status(400).json({ error: 'Name is required' });
         }
-        const session = new Sessions({ name });
+        const session = new Session({ name }); // Updated to use the new model name
         await session.save();
         res.status(201).json({ message: 'Session added successfully', session });
     } catch (error) {

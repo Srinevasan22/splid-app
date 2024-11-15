@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const participantController = require('../controllers/participantController');
+const participantController = require('../controllers/participantcontroller'); // Updated to match lowercase and singular naming
 
 // Route to add a new participant
 router.post('/add', async (req, res) => {

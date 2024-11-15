@@ -32,14 +32,14 @@ app.use(cors({
 }));
 
 // Routes
-const participantsRoute = require('./routes/participants');
-app.use('/participants', participantsRoute);
+const participantRoute = require('./routes/participant'); // Updated to match the singular naming
+app.use('/participants', participantRoute);
 
-const expensesRoute = require('./routes/expenses'); // Import expenses routes
-app.use('/expenses', expensesRoute); // Register expenses routes
+const expenseRoute = require('./routes/expense'); // Updated to match the singular naming
+app.use('/expenses', expenseRoute);
 
-const sessionsRoute = require('./routes/sessions'); // Import sessions routes
-app.use('/sessions', sessionsRoute); // Register sessions routes
+const sessionRoute = require('./routes/session'); // Updated to match the singular naming
+app.use('/sessions', sessionRoute);
 
 // Health check route to verify server is running
 app.get('/health', (req, res) => {

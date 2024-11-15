@@ -1,5 +1,3 @@
-// models/expenseModel.js
-
 const mongoose = require('mongoose');
 
 const expenseSchema = new mongoose.Schema({
@@ -13,12 +11,12 @@ const expenseSchema = new mongoose.Schema({
   },
   paidBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Participant',
+    ref: 'participant', // Updated to lowercase to match file structure
     required: true
   },
   splitAmong: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Participant',
+    ref: 'participant', // Updated to lowercase to match file structure
     required: true
   }],
   sessionId: {
@@ -31,6 +29,7 @@ const expenseSchema = new mongoose.Schema({
   }
 });
 
-const Expense = mongoose.model('Expense', expenseSchema);
+// Updated model name to lowercase and singular
+const Expense = mongoose.model('expense', expenseSchema);
 
 module.exports = Expense;

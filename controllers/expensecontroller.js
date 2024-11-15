@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const Expense = require('../models/expenseModel');
-const Participant = require('../models/participantModel');
+const Expense = require('../models/expensemodel'); // Updated to lowercase singular
+const Participant = require('../models/participantmodel'); // Updated to lowercase singular
 const PDFDocument = require('pdfkit'); // Import PDF generation library
 
 // Add a new expense

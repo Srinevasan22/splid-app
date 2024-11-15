@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Expenses = require('../models/expenseModel');
+const Expense = require('../models/expensemodel'); // Updated to match lowercase and singular naming
 
 // Add expense
 router.post('/add', async (req, res) => {
@@ -9,7 +9,7 @@ router.post('/add', async (req, res) => {
         if (!sessionId || !description || !amount) {
             return res.status(400).json({ error: 'All fields are required' });
         }
-        const expense = new Expenses({ sessionId, description, amount });
+        const expense = new Expense({ sessionId, description, amount });
         await expense.save();
         res.status(201).json({ message: 'Expense added successfully', expense });
     } catch (error) {
@@ -20,7 +20,7 @@ router.post('/add', async (req, res) => {
 // Get expenses by session
 router.get('/:sessionId', async (req, res) => {
     try {
-        const expenses = await Expenses.find({ sessionId: req.params.sessionId });
+        const expenses = await Expense.find({ sessionId: req.params.sessionId });
         res.status(200).json(expenses);
     } catch (error) {
         res.status(500).json({ error: 'Error retrieving expenses', details: error.message });

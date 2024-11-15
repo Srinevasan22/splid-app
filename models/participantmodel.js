@@ -20,6 +20,7 @@ const participantSchema = new mongoose.Schema({
   }
 });
 
-const Participant = mongoose.model('Participant', participantSchema);
+// Updated model name to lowercase and singular
+const Participant = mongoose.model('participant', participantSchema);
 
-module.exports = Participant;
+module.exports = Participant; // Export updated to match lowercase and singular file naming

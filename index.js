@@ -1,5 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose'); // Import mongoose for MongoDB connection
+const cors = require('cors'); // Import CORS middleware
 const app = express();
 const PORT = 3000; // Explicitly set the port to 3000
 const PDFDocument = require('pdfkit'); // Import PDF generation library
@@ -18,6 +19,13 @@ mongoose.connect(mongoURI, {
 
 // Middleware to parse JSON
 app.use(express.json());
+
+// Enable CORS for requests from https://srinevasan.com
+app.use(cors({
+    origin: 'https://srinevasan.com', // Allow only requests from this origin
+    methods: ['GET', 'POST', 'OPTIONS'], // Specify allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'] // Specify allowed headers
+}));
 
 // Routes
 const participantsRoute = require('./routes/participants');
@@ -57,7 +65,7 @@ app.get('/generate-sample-pdf', (req, res) => {
   doc.end();
 });
 
-// Start the server - now on port 3000 - session updates
+// Start the server - now on port 3000 - CORS update
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });

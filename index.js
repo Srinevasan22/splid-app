@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose'); // Import mongoose for MongoDB connection
 const cors = require('cors'); // Import CORS middleware
 const app = express();
-const PORT = 3001; // Explicitly set the port to 3001
+const PORT = 3002; // Explicitly set the port to 3002
 const PDFDocument = require('pdfkit'); // Import PDF generation library
 
 // Access the GitHub secret and MongoDB URI from environment variables
@@ -66,7 +66,7 @@ app.get('/generate-sample-pdf', (req, res) => {
   doc.end();
 });
 
-// Start the server - now on port 3001
+// Start the server - now on port 3002
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://0.0.0.0:${PORT}`);
 });

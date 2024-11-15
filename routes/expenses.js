@@ -13,4 +13,10 @@ router.get("/session/:sessionId", expenseController.getExpenses);
 // Route to calculate balance for each participant in a session
 router.get("/session/:sessionId/balance", expenseController.calculateBalance);
 
+// Route to settle up between two participants
+router.post("/session/:sessionId/settle", expenseController.settleUp);
+
+// Route to generate a report for a specific session
+router.get("/session/:sessionId/report", expenseController.generateSessionReport);
+
 module.exports = router;

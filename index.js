@@ -22,6 +22,9 @@ app.use(express.json());
 const participantsRoute = require('./routes/participants');
 app.use('/participants', participantsRoute);
 
+const expensesRoute = require('./routes/expenses'); // Import expenses routes
+app.use('/expenses', expensesRoute); // Register expenses routes
+
 // Basic route
 app.get('/', (req, res) => {
   res.send('Welcome to the Splid API');
@@ -35,9 +38,6 @@ app.get('/test-secret', (req, res) => {
     res.send('No GitHub secret found');
   }
 });
-
-// Additional Routes for New Functionality
-app.use('/participants', participantsRoute); // Existing route setup for participants
 
 // Start the server - now on port 3000 - Test7
 app.listen(PORT, '0.0.0.0', () => {

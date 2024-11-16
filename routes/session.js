@@ -27,4 +27,23 @@ router.get('/', async (req, res) => {
     }
 });
 
+// Get a session by ID
+router.get('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Find session by ID
+        const session = await Session.findById(id);
+
+        if (!session) {
+            return res.status(404).json({ error: 'Session not found' });
+        }
+
+        res.status(200).json(session);
+    } catch (error) {
+        console.error('Error fetching session:', error);
+        res.status(500).json({ error: 'Error fetching session', details: error.message });
+    }
+});
+
 module.exports = router;

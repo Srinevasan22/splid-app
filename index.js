@@ -36,13 +36,13 @@ if (process.env.NODE_ENV === 'development' || process.env.CORS_ENABLED === 'true
 
 // Routes
 const participantRoute = require('./routes/participant'); // Updated to match the singular naming
-app.use('/participants', participantRoute);
+app.use('/participant', participantRoute);
 
 const expenseRoute = require('./routes/expense'); // Updated to match the singular naming
-app.use('/expenses', expenseRoute);
+app.use('/expense', expenseRoute);
 
 const sessionRoute = require('./routes/session'); // Updated to match the singular naming
-app.use('/sessions', sessionRoute);
+app.use('/session', sessionRoute);
 
 // Health check route to verify server is running
 app.get('/health', (req, res) => {

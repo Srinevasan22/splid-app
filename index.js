@@ -23,13 +23,16 @@ mongoose.connect(mongoURI, {
 // Middleware to parse JSON
 app.use(express.json());
 
-// Enable CORS for requests from https://srinevasan.com with single-origin header
-app.use(cors({
-  origin: 'https://srinevasan.com', // Allow only requests from this origin
-  methods: ['GET', 'POST', 'OPTIONS'], // Specify allowed methods
-  allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
-  credentials: true // Allow credentials to be sent if necessary
-}));
+// Conditional CORS setup for development or if NGINX is not handling CORS
+if (process.env.NODE_ENV === 'development' || process.env.CORS_ENABLED === 'true') {
+  console.log('CORS is enabled in the Node.js app');
+  app.use(cors({
+    origin: 'https://srinevasan.com', // Allow only requests from this origin
+    methods: ['GET', 'POST', 'OPTIONS'], // Specify allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
+    credentials: true // Allow credentials to be sent if necessary
+  }));
+}
 
 // Routes
 const participantRoute = require('./routes/participant'); // Updated to match the singular naming

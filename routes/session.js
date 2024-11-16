@@ -8,17 +8,20 @@ router.post('/add', async (req, res) => {
     try {
         const { name } = req.body;
         if (!name) {
+            console.warn('Name is required but not provided in the request');
             return res.status(400).json({ error: 'Name is required' });
         }
 
         // Check if a session with the same name already exists
         const existingSession = await Session.findOne({ name });
         if (existingSession) {
+            console.warn(`A session with name "${name}" already exists`);
             return res.status(409).json({ error: 'A session with this name already exists' });
         }
 
-        const session = new Session({ name }); // Updated to use the new model name
+        const session = new Session({ name });
         await session.save();
+        console.log(`Session created successfully: ${session._id}`);
         res.status(201).json({ message: 'Session added successfully', session });
     } catch (error) {
         console.error('Error adding session:', error);
@@ -29,7 +32,8 @@ router.post('/add', async (req, res) => {
 // Get all sessions
 router.get('/', async (req, res) => {
     try {
-        const sessions = await Session.find().sort({ createdAt: -1 }); // Fetch sessions, newest first
+        const sessions = await Session.find().sort({ createdAt: -1 });
+        console.log(`Retrieved ${sessions.length} sessions`);
         res.status(200).json(sessions);
     } catch (error) {
         console.error('Error retrieving sessions:', error);
@@ -42,15 +46,12 @@ router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Validate if the ID is a valid MongoDB ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
             console.warn(`Invalid session ID format received: ${id}`);
             return res.status(400).json({ error: 'Invalid session ID format' });
         }
 
-        // Find session by ID
         const session = await Session.findById(id);
-
         if (!session) {
             console.warn(`Session not found for ID: ${id}`);
             return res.status(404).json({ error: 'Session not found' });
@@ -64,16 +65,18 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// Get sessions filtered by name (new endpoint for querying sessions)
+// Get sessions filtered by name
 router.get('/search', async (req, res) => {
     try {
         const { name } = req.query;
 
         if (!name) {
+            console.warn('Name query parameter is required but not provided');
             return res.status(400).json({ error: 'Name query parameter is required' });
         }
 
-        const sessions = await Session.find({ name: { $regex: name, $options: 'i' } }); // Case-insensitive search
+        const sessions = await Session.find({ name: { $regex: name, $options: 'i' } });
+        console.log(`Retrieved ${sessions.length} sessions matching the query "${name}"`);
         res.status(200).json(sessions);
     } catch (error) {
         console.error('Error searching sessions:', error);
@@ -86,15 +89,12 @@ router.delete('/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Validate if the ID is a valid MongoDB ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
             console.warn(`Invalid session ID format received for deletion: ${id}`);
             return res.status(400).json({ error: 'Invalid session ID format' });
         }
 
-        // Find and delete session by ID
         const session = await Session.findByIdAndDelete(id);
-
         if (!session) {
             console.warn(`Session not found for deletion, ID: ${id}`);
             return res.status(404).json({ error: 'Session not found' });
@@ -114,17 +114,16 @@ router.put('/:id', async (req, res) => {
         const { id } = req.params;
         const { name } = req.body;
 
-        // Validate if the ID is a valid MongoDB ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
             console.warn(`Invalid session ID format received for update: ${id}`);
             return res.status(400).json({ error: 'Invalid session ID format' });
         }
 
         if (!name) {
+            console.warn('Name is required for updating the session but not provided');
             return res.status(400).json({ error: 'Name is required for updating the session' });
         }
 
-        // Find and update session by ID
         const updatedSession = await Session.findByIdAndUpdate(
             id,
             { name },
@@ -144,7 +143,7 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Bulk delete sessions (new feature to clear all sessions)
+// Bulk delete sessions
 router.delete('/', async (req, res) => {
     try {
         const result = await Session.deleteMany({});

@@ -44,6 +44,7 @@ router.get('/:id', async (req, res) => {
 
         // Validate if the ID is a valid MongoDB ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.warn(`Invalid session ID format received: ${id}`);
             return res.status(400).json({ error: 'Invalid session ID format' });
         }
 
@@ -51,9 +52,11 @@ router.get('/:id', async (req, res) => {
         const session = await Session.findById(id);
 
         if (!session) {
+            console.warn(`Session not found for ID: ${id}`);
             return res.status(404).json({ error: 'Session not found' });
         }
 
+        console.log(`Session retrieved: ${id}`);
         res.status(200).json(session);
     } catch (error) {
         console.error('Error fetching session:', error);
@@ -85,6 +88,7 @@ router.delete('/:id', async (req, res) => {
 
         // Validate if the ID is a valid MongoDB ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.warn(`Invalid session ID format received for deletion: ${id}`);
             return res.status(400).json({ error: 'Invalid session ID format' });
         }
 
@@ -92,9 +96,11 @@ router.delete('/:id', async (req, res) => {
         const session = await Session.findByIdAndDelete(id);
 
         if (!session) {
+            console.warn(`Session not found for deletion, ID: ${id}`);
             return res.status(404).json({ error: 'Session not found' });
         }
 
+        console.log(`Session deleted: ${id}`);
         res.status(200).json({ message: 'Session deleted successfully', session });
     } catch (error) {
         console.error('Error deleting session:', error);
@@ -110,6 +116,7 @@ router.put('/:id', async (req, res) => {
 
         // Validate if the ID is a valid MongoDB ObjectId
         if (!mongoose.Types.ObjectId.isValid(id)) {
+            console.warn(`Invalid session ID format received for update: ${id}`);
             return res.status(400).json({ error: 'Invalid session ID format' });
         }
 
@@ -125,9 +132,11 @@ router.put('/:id', async (req, res) => {
         );
 
         if (!updatedSession) {
+            console.warn(`Session not found for update, ID: ${id}`);
             return res.status(404).json({ error: 'Session not found' });
         }
 
+        console.log(`Session updated: ${id}`);
         res.status(200).json({ message: 'Session updated successfully', session: updatedSession });
     } catch (error) {
         console.error('Error updating session:', error);
@@ -139,6 +148,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/', async (req, res) => {
     try {
         const result = await Session.deleteMany({});
+        console.log(`All sessions deleted, count: ${result.deletedCount}`);
         res.status(200).json({ message: 'All sessions deleted successfully', deletedCount: result.deletedCount });
     } catch (error) {
         console.error('Error deleting all sessions:', error);

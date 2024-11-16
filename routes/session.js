@@ -61,6 +61,23 @@ router.get('/:id', async (req, res) => {
     }
 });
 
+// Get sessions filtered by name (new endpoint for querying sessions)
+router.get('/search', async (req, res) => {
+    try {
+        const { name } = req.query;
+
+        if (!name) {
+            return res.status(400).json({ error: 'Name query parameter is required' });
+        }
+
+        const sessions = await Session.find({ name: { $regex: name, $options: 'i' } }); // Case-insensitive search
+        res.status(200).json(sessions);
+    } catch (error) {
+        console.error('Error searching sessions:', error);
+        res.status(500).json({ error: 'Error searching sessions', details: error.message });
+    }
+});
+
 // Delete a session by ID
 router.delete('/:id', async (req, res) => {
     try {
@@ -115,6 +132,17 @@ router.put('/:id', async (req, res) => {
     } catch (error) {
         console.error('Error updating session:', error);
         res.status(500).json({ error: 'Error updating session', details: error.message });
+    }
+});
+
+// Bulk delete sessions (new feature to clear all sessions)
+router.delete('/', async (req, res) => {
+    try {
+        const result = await Session.deleteMany({});
+        res.status(200).json({ message: 'All sessions deleted successfully', deletedCount: result.deletedCount });
+    } catch (error) {
+        console.error('Error deleting all sessions:', error);
+        res.status(500).json({ error: 'Error deleting all sessions', details: error.message });
     }
 });
 

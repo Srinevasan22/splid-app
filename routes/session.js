@@ -17,4 +17,14 @@ router.post('/add', async (req, res) => {
     }
 });
 
+// Get all sessions
+router.get('/', async (req, res) => {
+    try {
+        const sessions = await Session.find().sort({ createdAt: -1 }); // Fetch sessions, newest first
+        res.status(200).json(sessions);
+    } catch (error) {
+        res.status(500).json({ error: 'Error retrieving sessions', details: error.message });
+    }
+});
+
 module.exports = router;

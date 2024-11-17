@@ -7,7 +7,7 @@ const helmet = require('helmet'); // Adds security-related HTTP headers
 const winston = require('winston'); // Import Winston for logging
 
 const app = express();
-const PORT = 3003; // Explicitly set the port to 3003
+const PORT = process.env.PORT || 3003; // Dynamically set the port with an environment variable fallback to 3003
 
 // Configure Winston logger with correct file path
 const logger = winston.createLogger({

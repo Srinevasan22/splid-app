@@ -9,7 +9,7 @@ exports.addParticipant = async (req, res) => {
     // Check for required fields
     if (!name || share === undefined || !sessionId) {
       return res.status(400).json({
-        message: "Missing required fields: 'name', 'share', and 'sessionId' are required"
+        message: "Missing required fields: 'name', 'share', and 'sessionId' are required",
       });
     }
 
@@ -46,7 +46,9 @@ exports.getParticipants = async (sessionId) => {
     }
 
     const participants = await Participant.find({ sessionId });
-    return participants;
+
+    // Return an empty array if no participants exist
+    return participants.length ? participants : [];
   } catch (error) {
     console.error("Error retrieving participants:", error);
     throw new Error(error.message);

@@ -5,7 +5,7 @@ const PDFDocument = require('pdfkit'); // Import PDF generation library
 const morgan = require('morgan'); // HTTP request logger middleware
 const helmet = require('helmet'); // Adds security-related HTTP headers
 const app = express();
-const PORT = 3002; // Explicitly set the port to 3002
+const PORT = 3003; // Explicitly set the port to 3003
 
 // Access the GitHub secret and MongoDB URI from environment variables
 const mySecret = process.env['github_secret'];

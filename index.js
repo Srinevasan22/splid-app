@@ -1,15 +1,16 @@
 const express = require('express');
-const mongoose = require('mongoose'); // Import mongoose for MongoDB connection
-const cors = require('cors'); // Import CORS middleware
-const PDFDocument = require('pdfkit'); // Import PDF generation library
-const morgan = require('morgan'); // HTTP request logger middleware
-const helmet = require('helmet'); // Adds security-related HTTP headers
-const winston = require('winston'); // Import Winston for logging
+const mongoose = require('mongoose'); // MongoDB connection
+const cors = require('cors'); // CORS middleware
+const PDFDocument = require('pdfkit'); // PDF generation
+const morgan = require('morgan'); // HTTP request logging
+const helmet = require('helmet'); // Security headers
+const winston = require('winston'); // Logging
+const net = require('net'); // Used for port checking
 
 const app = express();
-const PORT = process.env.PORT || 3003; // Dynamically set the port with an environment variable fallback to 3003
+let PORT = process.env.PORT || 3003; // Default port is 3003
 
-// Configure Winston logger with correct file path
+// Configure Winston logger
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
@@ -18,7 +19,7 @@ const logger = winston.createLogger({
   ),
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: '/root/splid_app/logs/app.log' }) // Updated to correct path
+    new winston.transports.File({ filename: '/root/splid_app/logs/app.log' }) // Correct path for logs
   ],
 });
 
@@ -32,9 +33,7 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => {
-    logger.info('Successfully connected to MongoDB');
-  })
+  .then(() => logger.info('Successfully connected to MongoDB'))
   .catch((err) => {
     logger.error('Failed to connect to MongoDB', err);
     process.exit(1); // Exit if MongoDB connection fails
@@ -42,14 +41,12 @@ mongoose
 
 // Middleware to parse JSON
 app.use(express.json());
+app.use(helmet());
 
 // Use morgan for logging HTTP requests in development mode
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
-
-// Use helmet to add security headers
-app.use(helmet());
 
 // Conditional CORS setup for development or if NGINX is not handling CORS
 if (process.env.NODE_ENV === 'development' || process.env.CORS_ENABLED === 'true') {
@@ -126,6 +123,33 @@ app.get('/generate-sample-pdf', (req, res) => {
   doc.end();
 });
 
+// Check port availability and set dynamic port if needed
+const checkPort = (port, callback) => {
+  const server = net.createServer()
+    .once('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        callback(false); // Port is in use
+      }
+    })
+    .once('listening', () => {
+      server.close();
+      callback(true); // Port is available
+    })
+    .listen(port);
+};
+
+const setAvailablePort = (callback) => {
+  checkPort(PORT, (available) => {
+    if (!available) {
+      logger.warn(`Port ${PORT} is in use. Trying next port...`);
+      PORT++;
+      setAvailablePort(callback);
+    } else {
+      callback();
+    }
+  });
+};
+
 // Graceful Shutdown Hook
 process.on('SIGINT', async () => {
   logger.info('Shutting down gracefully...');
@@ -139,12 +163,14 @@ process.on('SIGINT', async () => {
   }
 });
 
-// Start the server and log startup status
-app
-  .listen(PORT, '0.0.0.0', () => {
-    logger.info(`Server is running on http://0.0.0.0:${PORT}`);
-  })
-  .on('error', (err) => {
-    logger.error('Failed to start server:', err);
-    process.exit(1); // Exit if the server fails to start
-  });
+// Start the server dynamically
+setAvailablePort(() => {
+  app
+    .listen(PORT, '0.0.0.0', () => {
+      logger.info(`Server is running on http://0.0.0.0:${PORT}`);
+    })
+    .on('error', (err) => {
+      logger.error('Failed to start server:', err);
+      process.exit(1);
+    });
+});

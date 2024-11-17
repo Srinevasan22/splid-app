@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose'); // Import mongoose for MongoDB connection
 const cors = require('cors'); // Import CORS middleware
 const PDFDocument = require('pdfkit'); // Import PDF generation library
+const morgan = require('morgan'); // HTTP request logger middleware
+const helmet = require('helmet'); // Adds security-related HTTP headers
 const app = express();
 const PORT = 3002; // Explicitly set the port to 3002
 
@@ -9,7 +11,7 @@ const PORT = 3002; // Explicitly set the port to 3002
 const mySecret = process.env['github_secret'];
 const mongoURI = process.env['MONGODB_URI'] || 'mongodb://localhost:27017/splidDB';
 
-// MongoDB connection
+// MongoDB connection with additional logging
 mongoose
   .connect(mongoURI, {
     useNewUrlParser: true,
@@ -26,13 +28,21 @@ mongoose
 // Middleware to parse JSON
 app.use(express.json());
 
+// Use morgan for logging HTTP requests in development mode
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
+// Use helmet to add security headers
+app.use(helmet());
+
 // Conditional CORS setup for development or if NGINX is not handling CORS
 if (process.env.NODE_ENV === 'development' || process.env.CORS_ENABLED === 'true') {
   console.log('CORS is enabled in the Node.js app');
   app.use(
     cors({
       origin: 'https://srinevasan.com', // Allow only requests from this origin
-      methods: ['GET', 'POST', 'OPTIONS'], // Specify allowed methods
+      methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'], // Specify allowed methods
       allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
       credentials: true, // Allow credentials to be sent if necessary
     })
@@ -40,13 +50,13 @@ if (process.env.NODE_ENV === 'development' || process.env.CORS_ENABLED === 'true
 }
 
 // Routes
-const participantRoute = require('./routes/participant'); // Updated to match the singular naming
+const participantRoute = require('/root/splid_app/routes/participant'); // Updated to match the server file structure
 app.use('/participant', participantRoute);
 
-const expenseRoute = require('./routes/expense'); // Updated to match the singular naming
+const expenseRoute = require('/root/splid_app/routes/expense'); // Updated to match the server file structure
 app.use('/expense', expenseRoute);
 
-const sessionRoute = require('./routes/session'); // Updated to match the singular naming
+const sessionRoute = require('/root/splid_app/routes/session'); // Updated to match the server file structure
 app.use('/session', sessionRoute);
 
 // Additional Routes for Reporting and Metrics
@@ -114,7 +124,7 @@ process.on('SIGINT', async () => {
   }
 });
 
-// Start the server and log startup status - session update
+// Start the server and log startup status
 app
   .listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on http://0.0.0.0:${PORT}`);

@@ -4,24 +4,39 @@ const cors = require('cors'); // Import CORS middleware
 const PDFDocument = require('pdfkit'); // Import PDF generation library
 const morgan = require('morgan'); // HTTP request logger middleware
 const helmet = require('helmet'); // Adds security-related HTTP headers
+const winston = require('winston'); // Import Winston for logging
+
 const app = express();
 const PORT = 3003; // Explicitly set the port to 3003
+
+// Configure Winston logger
+const logger = winston.createLogger({
+  level: 'info',
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.json()
+  ),
+  transports: [
+    new winston.transports.Console(),
+    new winston.transports.File({ filename: './logs/app.log' })
+  ],
+});
 
 // Access the GitHub secret and MongoDB URI from environment variables
 const mySecret = process.env['github_secret'];
 const mongoURI = process.env['MONGODB_URI'] || 'mongodb://localhost:27017/splidDB';
 
-// MongoDB connection with additional logging
+// MongoDB connection with enhanced logging
 mongoose
   .connect(mongoURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => {
-    console.log('Successfully connected to MongoDB');
+    logger.info('Successfully connected to MongoDB');
   })
   .catch((err) => {
-    console.error('Failed to connect to MongoDB', err);
+    logger.error('Failed to connect to MongoDB', err);
     process.exit(1); // Exit if MongoDB connection fails
   });
 
@@ -38,7 +53,7 @@ app.use(helmet());
 
 // Conditional CORS setup for development or if NGINX is not handling CORS
 if (process.env.NODE_ENV === 'development' || process.env.CORS_ENABLED === 'true') {
-  console.log('CORS is enabled in the Node.js app');
+  logger.info('CORS is enabled in the Node.js app');
   app.use(
     cors({
       origin: 'https://srinevasan.com', // Allow only requests from this origin
@@ -50,34 +65,34 @@ if (process.env.NODE_ENV === 'development' || process.env.CORS_ENABLED === 'true
 }
 
 // Routes
-const participantRoute = require('/root/splid_app/routes/participant'); // Updated to match the server file structure
+const participantRoute = require('/root/splid_app/routes/participant');
 app.use('/participant', participantRoute);
 
-const expenseRoute = require('/root/splid_app/routes/expense'); // Updated to match the server file structure
+const expenseRoute = require('/root/splid_app/routes/expense');
 app.use('/expense', expenseRoute);
 
-const sessionRoute = require('/root/splid_app/routes/session'); // Updated to match the server file structure
+const sessionRoute = require('/root/splid_app/routes/session');
 app.use('/session', sessionRoute);
 
 // Additional Routes for Reporting and Metrics
 app.get('/report/sessions', async (req, res) => {
   try {
-    const Session = require('./models/sessionmodel'); // Dynamically load model
+    const Session = require('./models/sessionmodel');
     const sessions = await Session.find().sort({ createdAt: -1 });
     res.status(200).json({ message: 'Session report generated successfully', sessions });
   } catch (error) {
-    console.error('Error generating session report:', error);
+    logger.error('Error generating session report:', error);
     res.status(500).json({ error: 'Error generating session report', details: error.message });
   }
 });
 
 app.get('/report/participants', async (req, res) => {
   try {
-    const Participant = require('./models/participantmodel'); // Dynamically load model
+    const Participant = require('./models/participantmodel');
     const participants = await Participant.find();
     res.status(200).json({ message: 'Participant report generated successfully', participants });
   } catch (error) {
-    console.error('Error generating participant report:', error);
+    logger.error('Error generating participant report:', error);
     res.status(500).json({ error: 'Error generating participant report', details: error.message });
   }
 });
@@ -89,7 +104,7 @@ app.get('/health', (req, res) => {
 
 // Root route to ensure proper JSON response
 app.get('/', (req, res) => {
-  console.log('Root route accessed');
+  logger.info('Root route accessed');
   res.json({ message: 'Welcome to the Splid API' });
 });
 
@@ -113,13 +128,13 @@ app.get('/generate-sample-pdf', (req, res) => {
 
 // Graceful Shutdown Hook
 process.on('SIGINT', async () => {
-  console.log('Shutting down gracefully...');
+  logger.info('Shutting down gracefully...');
   try {
     await mongoose.disconnect();
-    console.log('Disconnected from MongoDB');
+    logger.info('Disconnected from MongoDB');
     process.exit(0);
   } catch (error) {
-    console.error('Error during shutdown:', error);
+    logger.error('Error during shutdown:', error);
     process.exit(1);
   }
 });
@@ -127,9 +142,9 @@ process.on('SIGINT', async () => {
 // Start the server and log startup status
 app
   .listen(PORT, '0.0.0.0', () => {
-    console.log(`Server is running on http://0.0.0.0:${PORT}`);
+    logger.info(`Server is running on http://0.0.0.0:${PORT}`);
   })
   .on('error', (err) => {
-    console.error('Failed to start server:', err);
+    logger.error('Failed to start server:', err);
     process.exit(1); // Exit if the server fails to start
   });

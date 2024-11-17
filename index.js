@@ -9,7 +9,7 @@ const winston = require('winston'); // Import Winston for logging
 const app = express();
 const PORT = 3003; // Explicitly set the port to 3003
 
-// Configure Winston logger
+// Configure Winston logger with correct file path
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
@@ -18,7 +18,7 @@ const logger = winston.createLogger({
   ),
   transports: [
     new winston.transports.Console(),
-    new winston.transports.File({ filename: './logs/app.log' })
+    new winston.transports.File({ filename: '/root/splid_app/logs/app.log' }) // Updated to correct path
   ],
 });
 

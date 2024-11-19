@@ -25,9 +25,7 @@ router.get('/session/:sessionId', async (req, res) => {
             return res.status(400).json({ error: 'Session ID is required' });
         }
         const participants = await participantController.getParticipants(sessionId);
-        if (!participants || participants.length === 0) {
-            return res.status(404).json({ error: 'No participants found for this session' });
-        }
+        // Allow empty list if no participants are found
         res.status(200).json(participants);
     } catch (error) {
         console.error('Error retrieving participants:', error);

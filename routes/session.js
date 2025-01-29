@@ -144,7 +144,7 @@ router.put('/session/:id', async (req, res) => {  // No need for '/splid' here
 });
 
 // Bulk delete sessions
-router.delete('/session/', async (req, res) => {  // No need for '/splid' here
+router.delete('/session', async (req, res) => {  // No need for '/splid' here
     try {
         const result = await Session.deleteMany({});
         console.log(`All sessions deleted, count: ${result.deletedCount}`);

@@ -69,7 +69,7 @@ app.use('/splid/participant', participantRoute);
 const expenseRoute = require('/root/splid_app/routes/expense');
 app.use('/splid/expense', expenseRoute);
 
-const sessionRoute = require('/root/splid_app/routes/session');
+const sessionRoute = require('./routes/session');
 app.use('/splid/session', sessionRoute);
 
 // Additional Routes for Reporting and Metrics

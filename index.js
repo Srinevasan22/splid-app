@@ -64,16 +64,16 @@ if (process.env.NODE_ENV === 'development' || process.env.CORS_ENABLED === 'true
 
 // Routes
 const participantRoute = require('/root/splid_app/routes/participant');
-app.use('/participant', participantRoute);
+app.use('/splid/participant', participantRoute);
 
 const expenseRoute = require('/root/splid_app/routes/expense');
-app.use('/expense', expenseRoute);
+app.use('/splid/expense', expenseRoute);
 
 const sessionRoute = require('/root/splid_app/routes/session');
-app.use('/session', sessionRoute);
+app.use('/splid/session', sessionRoute);
 
 // Additional Routes for Reporting and Metrics
-app.get('/report/sessions', async (req, res) => {
+app.get('/splid/report/sessions', async (req, res) => {
   try {
     const Session = require('./models/sessionmodel');
     const sessions = await Session.find().sort({ createdAt: -1 });
@@ -84,7 +84,7 @@ app.get('/report/sessions', async (req, res) => {
   }
 });
 
-app.get('/report/participants', async (req, res) => {
+app.get('/splid/report/participants', async (req, res) => {
   try {
     const Participant = require('./models/participantmodel');
     const participants = await Participant.find();
@@ -112,7 +112,7 @@ app.get('/', (req, res) => {
 });
 
 // Test route to check if the secret is being retrieved correctly
-app.get('/test-secret', (req, res) => {
+app.get('/splid/test-secret', (req, res) => {
   if (mySecret) {
     res.json({ message: `GitHub Secret: ${mySecret}` });
   } else {
@@ -121,7 +121,7 @@ app.get('/test-secret', (req, res) => {
 });
 
 // Route to generate and return a sample PDF for testing
-app.get('/generate-sample-pdf', (req, res) => {
+app.get('/splid/generate-sample-pdf', (req, res) => {
   const doc = new PDFDocument();
   res.setHeader('Content-Type', 'application/pdf');
   doc.pipe(res);

@@ -9,16 +9,25 @@ const expenseSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  paidBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'participant', // Updated to lowercase to match file structure
+  currency: {  // NEW FIELD
+    type: String,
+    required: true,
+    default: "USD"
+  },
+  splitType: {  // NEW FIELD
+    type: String,
+    enum: ["equal", "percentage", "shares"],
     required: true
   },
-  splitAmong: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'participant', // Updated to lowercase to match file structure
-    required: true
+  splitDetails: [{  // NEW FIELD
+    participantId: { type: mongoose.Schema.Types.ObjectId, ref: 'participant' },
+    share: Number
   }],
+  paidBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'participant',
+    required: true
+  },
   sessionId: {
     type: String,
     required: true
@@ -29,7 +38,5 @@ const expenseSchema = new mongoose.Schema({
   }
 });
 
-// Updated model name to lowercase and singular
 const Expense = mongoose.model('expense', expenseSchema);
-
 module.exports = Expense;

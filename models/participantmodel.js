@@ -17,10 +17,17 @@ const participantSchema = new mongoose.Schema({
   sessionId: {
     type: String,
     required: true
+  },
+  groupId: {  // NEW FIELD
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'group',
+    required: true
+  },
+  createdAt: {  // NEW FIELD
+    type: Date,
+    default: Date.now
   }
 });
 
-// Updated model name to lowercase and singular
 const Participant = mongoose.model('participant', participantSchema);
-
-module.exports = Participant; // Export updated to match lowercase and singular file naming
+module.exports = Participant;

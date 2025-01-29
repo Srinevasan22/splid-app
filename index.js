@@ -100,6 +100,11 @@ app.get('/health', (req, res) => {
   res.status(200).json({ message: 'API is up and running' });
 });
 
+// Support both /health and /splid/health
+app.get('/splid/health', (req, res) => {
+  res.status(200).json({ message: 'API is up and running' });
+});
+
 // Root route to ensure proper JSON response
 app.get('/', (req, res) => {
   logger.info('Root route accessed');

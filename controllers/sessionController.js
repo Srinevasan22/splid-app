@@ -1,3 +1,4 @@
+const mongoose = require('mongoose'); // ✅ Import mongoose to validate ObjectId
 const Session = require('../models/sessionmodel'); // Updated to lowercase
 
 // Add a new session
@@ -5,17 +6,17 @@ exports.addSession = async (req, res) => {
     try {
         const { name, groupId } = req.body;  // Now we're expecting groupId in the request
 
-        // Check if the required fields are provided
-        if (!name || !groupId) {
-            return res.status(400).json({ message: "Session name and groupId are required" });
+        // ✅ Ensure groupId is provided and valid before checking ObjectId
+        if (!groupId || !mongoose.Types.ObjectId.isValid(groupId)) {
+            return res.status(400).json({ message: "Invalid or missing groupId format" });
         }
 
-        // Ensure groupId is a valid ObjectId
-        if (!mongoose.Types.ObjectId.isValid(groupId)) {
-            return res.status(400).json({ message: "Invalid groupId format" });
+        // ✅ Ensure name is provided
+        if (!name) {
+            return res.status(400).json({ message: "Session name is required" });
         }
 
-        // Create a new session with the name and groupId
+        // ✅ Create a new session with name and groupId
         const newSession = new Session({ name, groupId });
 
         // Save the new session to the database
@@ -31,7 +32,9 @@ exports.addSession = async (req, res) => {
 // Get all sessions
 exports.getSessions = async (req, res) => {
     try {
-        const sessions = await Session.find().sort({ createdAt: -1 }); // Fetch sessions, newest first
+        // ✅ Populate groupId to ensure correct data fetching
+        const sessions = await Session.find().populate("groupId").sort({ createdAt: -1 });
+
         res.status(200).json(sessions);
     } catch (error) {
         console.error("Error retrieving sessions:", error);

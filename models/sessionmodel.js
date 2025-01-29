@@ -5,9 +5,9 @@ const sessionSchema = new mongoose.Schema({
         type: String, 
         required: true
     }, 
-    groupId: {  // Reference to the group collection
+    groupId: {  // Ensure this field is defined properly
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Group',  // Make sure this matches the model name, which is capitalized
+        ref: 'group',  // Ensure that 'group' is the correct reference to the group model
         required: true
     },
     createdAt: { 
@@ -16,5 +16,5 @@ const sessionSchema = new mongoose.Schema({
     }
 });
 
-const Session = mongoose.model('Session', sessionSchema);  // Use the correct capitalized name here as well
+const Session = mongoose.model('session', sessionSchema);
 module.exports = Session;

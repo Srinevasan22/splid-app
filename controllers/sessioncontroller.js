@@ -3,13 +3,22 @@ const Session = require('../models/sessionmodel'); // Updated to lowercase
 // Add a new session
 exports.addSession = async (req, res) => {
     try {
-        const { name } = req.body;
+        const { name, groupId } = req.body;  // Now we're expecting groupId in the request
 
-        if (!name) {
-            return res.status(400).json({ message: "Session name is required" });
+        // Check if the required fields are provided
+        if (!name || !groupId) {
+            return res.status(400).json({ message: "Session name and groupId are required" });
         }
 
-        const newSession = new Session({ name });
+        // Ensure groupId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(groupId)) {
+            return res.status(400).json({ message: "Invalid groupId format" });
+        }
+
+        // Create a new session with the name and groupId
+        const newSession = new Session({ name, groupId });
+
+        // Save the new session to the database
         await newSession.save();
 
         res.status(201).json({ message: "Session created successfully", session: newSession });

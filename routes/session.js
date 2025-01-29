@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Session = require('../models/sessionmodel'); // Updated to match the new singular and lowercase naming
 
 // Add session
-router.post('/add', async (req, res) => {  // No need for '/splid' here
+router.post('/session', async (req, res) => {  // No need for '/splid' here
     try {
         const { name } = req.body;
         if (!name) {
@@ -30,7 +30,7 @@ router.post('/add', async (req, res) => {  // No need for '/splid' here
 });
 
 // Get all sessions
-router.get('/', async (req, res) => {  // No need for '/splid' here
+router.get('/session', async (req, res) => {  // No need for '/splid' here
     try {
         const sessions = await Session.find().sort({ createdAt: -1 });
         console.log(`Retrieved ${sessions.length} sessions`);
@@ -42,7 +42,7 @@ router.get('/', async (req, res) => {  // No need for '/splid' here
 });
 
 // Get a session by ID
-router.get('/:id', async (req, res) => {  // No need for '/splid' here
+router.get('/session/:id', async (req, res) => {  // No need for '/splid' here
     try {
         const { id } = req.params;
 
@@ -66,7 +66,7 @@ router.get('/:id', async (req, res) => {  // No need for '/splid' here
 });
 
 // Get sessions filtered by name
-router.get('/search', async (req, res) => {  // No need for '/splid' here
+router.get('/session/search', async (req, res) => {  // No need for '/splid' here
     try {
         const { name } = req.query;
 
@@ -85,7 +85,7 @@ router.get('/search', async (req, res) => {  // No need for '/splid' here
 });
 
 // Delete a session by ID
-router.delete('/:id', async (req, res) => {  // No need for '/splid' here
+router.delete('/session/:id', async (req, res) => {  // No need for '/splid' here
     try {
         const { id } = req.params;
 
@@ -109,7 +109,7 @@ router.delete('/:id', async (req, res) => {  // No need for '/splid' here
 });
 
 // Update a session by ID
-router.put('/:id', async (req, res) => {  // No need for '/splid' here
+router.put('/session/:id', async (req, res) => {  // No need for '/splid' here
     try {
         const { id } = req.params;
         const { name } = req.body;
@@ -144,7 +144,7 @@ router.put('/:id', async (req, res) => {  // No need for '/splid' here
 });
 
 // Bulk delete sessions
-router.delete('/', async (req, res) => {  // No need for '/splid' here
+router.delete('/session/', async (req, res) => {  // No need for '/splid' here
     try {
         const result = await Session.deleteMany({});
         console.log(`All sessions deleted, count: ${result.deletedCount}`);

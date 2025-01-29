@@ -96,11 +96,6 @@ app.get('/splid/report/participants', async (req, res) => {
 });
 
 // Health check route to verify server is running
-app.get('/health', (req, res) => {
-  res.status(200).json({ message: 'API is up and running' });
-});
-
-// Support both /health and /splid/health
 app.get('/splid/health', (req, res) => {
   res.status(200).json({ message: 'API is up and running' });
 });

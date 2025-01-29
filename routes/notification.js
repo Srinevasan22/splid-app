@@ -4,6 +4,7 @@ const Notification = require("../models/notificationmodel");
 const express = require("express");
 const router = express.Router();
 
+// Controller functions
 exports.logAction = async (userId, action, details = {}) => {
   const logEntry = new ActivityLog({ userId, action, details });
   await logEntry.save();
@@ -37,14 +38,12 @@ exports.markAsRead = async (req, res) => {
     const notification = await Notification.findByIdAndUpdate(
       id,
       { read: true },
-      { new: true },
+      { new: true }
     );
     if (!notification) {
       return res.status(404).json({ message: "Notification not found" });
     }
-    res
-      .status(200)
-      .json({ message: "Notification marked as read", notification });
+    res.status(200).json({ message: "Notification marked as read", notification });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -73,9 +72,10 @@ exports.updateGroup = async (req, res) => {
   }
 };
 
-router.get("/logs", exports.getLogs);
-router.put("/:id", exports.updateGroup);
-router.delete("/:id", exports.deleteGroup);
-router.put("/markAsRead/:id", exports.markAsRead);
+// Updated route paths with /splid prefix
+router.get("/splid/logs", exports.getLogs);
+router.put("/splid/:id", exports.updateGroup);
+router.delete("/splid/:id", exports.deleteGroup);
+router.put("/splid/markAsRead/:id", exports.markAsRead);
 
 module.exports = router;

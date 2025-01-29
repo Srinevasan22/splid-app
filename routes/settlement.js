@@ -2,6 +2,7 @@ const express = require('express');
 const settlementController = require('../controllers/settlementController');
 const router = express.Router();
 
-router.post('/settle', settlementController.recordSettlement);
+// Updated route with /splid prefix
+router.post('/splid/settle', settlementController.recordSettlement);
 
 module.exports = router;

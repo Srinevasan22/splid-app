@@ -3,7 +3,7 @@ const router = express.Router();
 const participantController = require("../controllers/participantcontroller"); // Updated to match lowercase and singular naming
 
 // Route to add a new participant
-router.post("/add", async (req, res) => {
+router.post("/splid/add", async (req, res) => {
     try {
         const { sessionId, name } = req.body;
         if (!sessionId || !name) {
@@ -11,9 +11,7 @@ router.post("/add", async (req, res) => {
                 .status(400)
                 .json({ error: "Session ID and name are required" });
         }
-        const participant = await participantController.addParticipant(
-            req.body,
-        );
+        const participant = await participantController.addParticipant(req.body);
         res.status(201).json({
             message: "Participant added successfully",
             participant,
@@ -28,7 +26,7 @@ router.post("/add", async (req, res) => {
 });
 
 // Route to get all participants in a specific session
-router.get("/session/:sessionId", async (req, res) => {
+router.get("/splid/session/:sessionId", async (req, res) => {
     try {
         const sessionId = req.params.sessionId;
         if (!sessionId) {
@@ -48,7 +46,7 @@ router.get("/session/:sessionId", async (req, res) => {
 });
 
 // Route to delete a specific participant by ID
-router.delete("/delete/:participantId", async (req, res) => {
+router.delete("/splid/delete/:participantId", async (req, res) => {
     try {
         const participantId = req.params.participantId;
         if (!participantId) {
@@ -68,7 +66,7 @@ router.delete("/delete/:participantId", async (req, res) => {
 });
 
 // Route to update a specific participant by ID
-router.put("/update/:participantId", async (req, res) => {
+router.put("/splid/update/:participantId", async (req, res) => {
     try {
         const participantId = req.params.participantId;
         const updates = req.body;
@@ -78,10 +76,7 @@ router.put("/update/:participantId", async (req, res) => {
                 .json({ error: "Participant ID and updates are required" });
         }
         const updatedParticipant =
-            await participantController.updateParticipant(
-                participantId,
-                updates,
-            );
+            await participantController.updateParticipant(participantId, updates);
         res.status(200).json({
             message: "Participant updated successfully",
             updatedParticipant,
@@ -96,7 +91,7 @@ router.put("/update/:participantId", async (req, res) => {
 });
 
 // Route to get all participants across all sessions
-router.get("/all", async (req, res) => {
+router.get("/splid/all", async (req, res) => {
     try {
         const allParticipants =
             await participantController.getAllParticipants();
@@ -114,7 +109,7 @@ router.get("/all", async (req, res) => {
 });
 
 // Route to get a summary of expenses for a session
-router.get("/summary/:sessionId", async (req, res) => {
+router.get("/splid/summary/:sessionId", async (req, res) => {
     try {
         const sessionId = req.params.sessionId;
         if (!sessionId) {
@@ -133,7 +128,7 @@ router.get("/summary/:sessionId", async (req, res) => {
 });
 
 // Route to clear all participants in a session
-router.delete("/clear/:sessionId", async (req, res) => {
+router.delete("/splid/clear/:sessionId", async (req, res) => {
     try {
         const sessionId = req.params.sessionId;
         if (!sessionId) {
@@ -151,7 +146,7 @@ router.delete("/clear/:sessionId", async (req, res) => {
 });
 
 // Route to calculate each participant's share in a session based on total expenses
-router.post("/calculate-share/:sessionId", async (req, res) => {
+router.post("/splid/calculate-share/:sessionId", async (req, res) => {
     try {
         const sessionId = req.params.sessionId;
         if (!sessionId) {

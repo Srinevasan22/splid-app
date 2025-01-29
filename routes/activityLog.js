@@ -1,7 +1,8 @@
-const ActivityLog = require('../models/activityLogmodel');
 const express = require('express');
 const router = express.Router();
+const ActivityLog = require('../models/activityLogmodel');
 
+// Controller functions
 exports.logAction = async (userId, action, details = {}) => {
     const logEntry = new ActivityLog({ userId, action, details });
     await logEntry.save();
@@ -44,6 +45,7 @@ exports.exportReport = async (req, res) => {
     }
 };
 
-router.get('/logs', exports.getLogs);
+// Updated route with /splid prefix
+router.get('/splid/logs', exports.getLogs);
 
 module.exports = router;

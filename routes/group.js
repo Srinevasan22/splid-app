@@ -3,6 +3,7 @@ const Group = require('../models/groupmodel');
 const express = require('express');
 const router = express.Router();
 
+// Controller functions
 exports.logAction = async (userId, action, details = {}) => {
     const logEntry = new ActivityLog({ userId, action, details });
     await logEntry.save();
@@ -61,8 +62,9 @@ exports.updateGroup = async (req, res) => {
     }
 };
 
-router.get('/logs', exports.getLogs);
-router.put('/:id', exports.updateGroup);
-router.delete('/:id', exports.deleteGroup);
+// Updated route paths with /splid prefix
+router.get('/splid/logs', exports.getLogs);
+router.put('/splid/:id', exports.updateGroup);
+router.delete('/splid/:id', exports.deleteGroup);
 
 module.exports = router;

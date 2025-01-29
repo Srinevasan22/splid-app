@@ -63,10 +63,10 @@ if (process.env.NODE_ENV === 'development' || process.env.CORS_ENABLED === 'true
 }
 
 // Routes
-const participantRoute = require('/root/splid_app/routes/participant');
+const participantRoute = require('./routes/participant');
 app.use('/splid/participant', participantRoute);
 
-const expenseRoute = require('/root/splid_app/routes/expense');
+const expenseRoute = require('./routes/expense');
 app.use('/splid/expense', expenseRoute);
 
 const sessionRoute = require('./routes/session');

@@ -1,1 +1,81 @@
-router.put('/markAsRead/:id', notificationController.markAsRead);
+const ActivityLog = require("../models/activityLogmodel");
+const Group = require("../models/groupmodel");
+const Notification = require("../models/notificationmodel");
+const express = require("express");
+const router = express.Router();
+
+exports.logAction = async (userId, action, details = {}) => {
+  const logEntry = new ActivityLog({ userId, action, details });
+  await logEntry.save();
+};
+
+exports.getLogs = async (req, res) => {
+  try {
+    const logs = await ActivityLog.find().sort({ timestamp: -1 });
+    res.status(200).json(logs);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.deleteGroup = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedGroup = await Group.findByIdAndDelete(id);
+    if (!deletedGroup) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+    res.status(200).json({ message: "Group deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.markAsRead = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const notification = await Notification.findByIdAndUpdate(
+      id,
+      { read: true },
+      { new: true },
+    );
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
+    res
+      .status(200)
+      .json({ message: "Notification marked as read", notification });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.exportReport = async (req, res) => {
+  try {
+    res.status(200).json({ message: "Report exported successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.updateGroup = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedGroup = await Group.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
+    if (!updatedGroup) {
+      return res.status(404).json({ message: "Group not found" });
+    }
+    res.status(200).json(updatedGroup);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+router.get("/logs", exports.getLogs);
+router.put("/:id", exports.updateGroup);
+router.delete("/:id", exports.deleteGroup);
+router.put("/markAsRead/:id", exports.markAsRead);
+
+module.exports = router;

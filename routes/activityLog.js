@@ -17,35 +17,7 @@ exports.getLogs = async (req, res) => {
     }
 };
 
-exports.deleteGroup = async (req, res) => {
-    try {
-        const { id } = req.params;
-        await Group.findByIdAndDelete(id);
-        res.status(200).json({ message: "Group deleted successfully" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-exports.markAsRead = async (req, res) => {
-    try {
-        const { id } = req.params;
-        await Notification.findByIdAndUpdate(id, { read: true });
-        res.status(200).json({ message: "Notification marked as read" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-exports.exportReport = async (req, res) => {
-    try {
-        res.status(200).json({ message: "Report exported successfully" });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
-
-// Correct route paths without /splid prefix
+// Updated route paths without /splid prefix
 router.get('/logs', exports.getLogs);
 
 module.exports = router;

@@ -62,41 +62,40 @@ if (process.env.NODE_ENV === 'development' || process.env.CORS_ENABLED === 'true
   );
 }
 
-// Routes
-const participantRoute = require('./routes/participant');
-app.use('/splid/participant', participantRoute);
-
-const expenseRoute = require('./routes/expense');
-app.use('/splid/expense', expenseRoute);
-
+// Routes for Session, Participant, and Expense
 const sessionRoute = require('./routes/session');
-app.use('/splid/session', sessionRoute);
+app.use('/sessions', sessionRoute);  // /sessions routes for session-related actions
 
-// Additional Routes for Reporting and Metrics
-app.get('/splid/report/sessions', async (req, res) => {
-  try {
-    const Session = require('./models/sessionmodel');
-    const sessions = await Session.find().sort({ createdAt: -1 });
-    res.status(200).json({ message: 'Session report generated successfully', sessions });
-  } catch (error) {
-    logger.error('Error generating session report:', error);
-    res.status(500).json({ error: 'Error generating session report', details: error.message });
-  }
-});
+// Participant route under session hierarchy
+const participantRoute = require('./routes/participant');
+app.use('/sessions/:sessionId/participants', participantRoute);  // /sessions/{sessionId}/participants routes for participants of a session
 
-app.get('/splid/report/participants', async (req, res) => {
-  try {
-    const Participant = require('./models/participantmodel');
-    const participants = await Participant.find();
-    res.status(200).json({ message: 'Participant report generated successfully', participants });
-  } catch (error) {
-    logger.error('Error generating participant report:', error);
-    res.status(500).json({ error: 'Error generating participant report', details: error.message });
-  }
-});
+// Expense route under session hierarchy
+const expenseRoute = require('./routes/expense');
+app.use('/sessions/:sessionId/expenses', expenseRoute);  // /sessions/{sessionId}/expenses routes for expenses of a session
+
+// Add other routes (Report, ActivityLog, etc.) in the same manner
+
+const reportRoute = require('./routes/report');
+app.use('/reports', reportRoute);  // /reports routes for reporting actions
+
+const userRoute = require('./routes/user');
+app.use('/users', userRoute);  // /users routes for user-related actions
+
+const activityLogRoute = require('./routes/activityLog');
+app.use('/logs', activityLogRoute);  // /logs routes for activity logs
+
+const settlementRoute = require('./routes/settlement');
+app.use('/settlements', settlementRoute);  // /settlements routes for settlement actions
+
+const transactionRoute = require('./routes/transaction');
+app.use('/transactions', transactionRoute);  // /transactions routes for transaction actions
+
+const notificationRoute = require('./routes/notification');
+app.use('/notifications', notificationRoute);  // /notifications routes for notification actions
 
 // Health check route to verify server is running
-app.get('/splid/health', (req, res) => {
+app.get('/health', (req, res) => {
   res.status(200).json({ message: 'API is up and running' });
 });
 
@@ -107,7 +106,7 @@ app.get('/', (req, res) => {
 });
 
 // Test route to check if the secret is being retrieved correctly
-app.get('/splid/test-secret', (req, res) => {
+app.get('/test-secret', (req, res) => {
   if (mySecret) {
     res.json({ message: `GitHub Secret: ${mySecret}` });
   } else {
@@ -116,7 +115,7 @@ app.get('/splid/test-secret', (req, res) => {
 });
 
 // Route to generate and return a sample PDF for testing
-app.get('/splid/generate-sample-pdf', (req, res) => {
+app.get('/generate-sample-pdf', (req, res) => {
   const doc = new PDFDocument();
   res.setHeader('Content-Type', 'application/pdf');
   doc.pipe(res);

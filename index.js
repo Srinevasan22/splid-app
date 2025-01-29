@@ -6,9 +6,10 @@ const morgan = require('morgan'); // HTTP request logging
 const helmet = require('helmet'); // Security headers
 const winston = require('winston'); // Logging
 const net = require('net'); // Used for port checking
+const portfinder = require('portfinder'); // Automatically find available port
+const fs = require('fs');
 
 const app = express();
-let PORT = process.env.PORT || 3003; // Default port is 3003
 
 // Configure Winston logger
 const logger = winston.createLogger({
@@ -123,32 +124,21 @@ app.get('/generate-sample-pdf', (req, res) => {
   doc.end();
 });
 
-// Check port availability and set dynamic port if needed
-const checkPort = (port, callback) => {
-  const server = net.createServer()
-    .once('error', (err) => {
-      if (err.code === 'EADDRINUSE') {
-        callback(false); // Port is in use
-      }
-    })
-    .once('listening', () => {
-      server.close();
-      callback(true); // Port is available
-    })
-    .listen(port);
-};
-
-const setAvailablePort = (callback) => {
-  checkPort(PORT, (available) => {
-    if (!available) {
-      logger.warn(`Port ${PORT} is in use. Trying next port...`);
-      PORT++;
-      setAvailablePort(callback);
-    } else {
-      callback();
+// Automatically find an available port starting from 3000
+portfinder.basePort = 3000;
+portfinder.getPort((err, port) => {
+    if (err) {
+        console.error('Error finding an available port:', err);
+        process.exit(1);
     }
-  });
-};
+
+    app.listen(port, '0.0.0.0', () => {
+        logger.info(`Server is running on http://0.0.0.0:${port}`);
+
+        // Store the assigned port in a file so NGINX can read it
+        fs.writeFileSync('/root/splid_app/api_port.txt', port.toString());
+    });
+});
 
 // Graceful Shutdown Hook
 process.on('SIGINT', async () => {
@@ -161,16 +151,4 @@ process.on('SIGINT', async () => {
     logger.error('Error during shutdown:', error);
     process.exit(1);
   }
-});
-
-// Start the server dynamically
-setAvailablePort(() => {
-  app
-    .listen(PORT, '0.0.0.0', () => {
-      logger.info(`Server is running on http://0.0.0.0:${PORT}`);
-    })
-    .on('error', (err) => {
-      logger.error('Failed to start server:', err);
-      process.exit(1);
-    });
 });

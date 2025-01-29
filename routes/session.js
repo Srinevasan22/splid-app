@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Session = require('../models/sessionmodel'); // Updated to match the new singular and lowercase naming
 
 // Add session
-router.post('/splid/add', async (req, res) => {
+router.post('/add', async (req, res) => {  // No need for '/splid' here
     try {
         const { name } = req.body;
         if (!name) {
@@ -30,7 +30,7 @@ router.post('/splid/add', async (req, res) => {
 });
 
 // Get all sessions
-router.get('/splid', async (req, res) => {
+router.get('/', async (req, res) => {  // No need for '/splid' here
     try {
         const sessions = await Session.find().sort({ createdAt: -1 });
         console.log(`Retrieved ${sessions.length} sessions`);
@@ -42,7 +42,7 @@ router.get('/splid', async (req, res) => {
 });
 
 // Get a session by ID
-router.get('/splid/:id', async (req, res) => {
+router.get('/:id', async (req, res) => {  // No need for '/splid' here
     try {
         const { id } = req.params;
 
@@ -66,7 +66,7 @@ router.get('/splid/:id', async (req, res) => {
 });
 
 // Get sessions filtered by name
-router.get('/splid/search', async (req, res) => {
+router.get('/search', async (req, res) => {  // No need for '/splid' here
     try {
         const { name } = req.query;
 
@@ -85,7 +85,7 @@ router.get('/splid/search', async (req, res) => {
 });
 
 // Delete a session by ID
-router.delete('/splid/:id', async (req, res) => {
+router.delete('/:id', async (req, res) => {  // No need for '/splid' here
     try {
         const { id } = req.params;
 
@@ -109,7 +109,7 @@ router.delete('/splid/:id', async (req, res) => {
 });
 
 // Update a session by ID
-router.put('/splid/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {  // No need for '/splid' here
     try {
         const { id } = req.params;
         const { name } = req.body;
@@ -144,7 +144,7 @@ router.put('/splid/:id', async (req, res) => {
 });
 
 // Bulk delete sessions
-router.delete('/splid', async (req, res) => {
+router.delete('/', async (req, res) => {  // No need for '/splid' here
     try {
         const result = await Session.deleteMany({});
         console.log(`All sessions deleted, count: ${result.deletedCount}`);

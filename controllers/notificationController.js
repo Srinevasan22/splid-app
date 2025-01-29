@@ -1,11 +1,8 @@
-const Notification = require('../models/notification');
-
-exports.sendNotification = async (req, res) => {
+exports.markAsRead = async (req, res) => {
     try {
-        const { userId, message, type } = req.body;
-        const notification = new Notification({ userId, message, type });
-        await notification.save();
-        res.status(201).json(notification);
+        const { id } = req.params;
+        await Notification.findByIdAndUpdate(id, { read: true });
+        res.status(200).json({ message: "Notification marked as read" });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

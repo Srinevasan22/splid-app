@@ -1,7 +1,1 @@
-const express = require('express');
-const reportController = require('../controllers/reportController');
-const router = express.Router();
-
-router.get('/generate', reportController.generateReport);
-
-module.exports = router;
+router.get('/export', reportController.exportReport);

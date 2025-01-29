@@ -1,11 +1,8 @@
-const Group = require('../models/groupmodel');
-
-exports.createGroup = async (req, res) => {
+exports.deleteGroup = async (req, res) => {
     try {
-        const { name, description, createdBy } = req.body;
-        const group = new Group({ name, description, createdBy });
-        await group.save();
-        res.status(201).json(group);
+        const { id } = req.params;
+        await Group.findByIdAndDelete(id);
+        res.status(200).json({ message: "Group deleted successfully" });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }

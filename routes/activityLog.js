@@ -45,7 +45,7 @@ exports.exportReport = async (req, res) => {
     }
 };
 
-// Updated route with /splid prefix
-router.get('/splid/logs', exports.getLogs);
+// Correct route paths without /splid prefix
+router.get('/logs', exports.getLogs);
 
 module.exports = router;

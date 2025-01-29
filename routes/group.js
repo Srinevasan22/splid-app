@@ -62,9 +62,9 @@ exports.updateGroup = async (req, res) => {
     }
 };
 
-// Updated route paths with /splid prefix
-router.get('/splid/logs', exports.getLogs);
-router.put('/splid/:id', exports.updateGroup);
-router.delete('/splid/:id', exports.deleteGroup);
+// Correct route paths without /splid prefix
+router.get('/logs', exports.getLogs);
+router.put('/:id', exports.updateGroup);
+router.delete('/:id', exports.deleteGroup);
 
 module.exports = router;

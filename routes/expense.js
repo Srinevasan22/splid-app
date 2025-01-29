@@ -3,7 +3,7 @@ const router = express.Router();
 const Expense = require('../models/expensemodel'); // Updated to match lowercase and singular naming
 
 // Add expense
-router.post('/splid/add', async (req, res) => {
+router.post('/add', async (req, res) => {  // No need for '/splid' here
     try {
         const { sessionId, description, amount } = req.body;
         if (!sessionId || !description || !amount) {
@@ -18,7 +18,7 @@ router.post('/splid/add', async (req, res) => {
 });
 
 // Get expenses by session
-router.get('/splid/:sessionId', async (req, res) => {
+router.get('/:sessionId', async (req, res) => {  // No need for '/splid' here
     try {
         const expenses = await Expense.find({ sessionId: req.params.sessionId });
         res.status(200).json(expenses);

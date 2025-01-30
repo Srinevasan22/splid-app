@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const participantController = require("../controllers/participantcontroller"); // Updated to match lowercase and singular naming
+const participantController = require("../controllers/participantcontroller");
+const participantRoute = require("./routes/participant");
 
 // Updated route paths to align with index.js
 router.post("/:sessionId/participants", async (req, res) => {
@@ -138,5 +139,8 @@ router.post("/calculate-share/:sessionId", async (req, res) => {
         });
     }
 });
+
+// Include additional routes
+router.use(participantRoute);
 
 module.exports = router;

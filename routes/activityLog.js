@@ -18,6 +18,6 @@ exports.getLogs = async (req, res) => {
 };
 
 // Updated route paths without /splid prefix
-router.get('/logs', exports.getLogs);
+router.get('/', exports.getLogs);
 
 module.exports = router;

@@ -7,23 +7,18 @@ const participantSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: false,
-    unique: true
+    required: false
   },
   share: {
     type: Number,
     required: true
   },
   sessionId: {
-    type: String,
-    required: true
-  },
-  groupId: {  // NEW FIELD
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'group',
+    ref: 'session',
     required: true
   },
-  createdAt: {  // NEW FIELD
+  createdAt: {
     type: Date,
     default: Date.now
   }

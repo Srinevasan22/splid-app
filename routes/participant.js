@@ -29,5 +29,15 @@ router.get("/:sessionId/participants", async (req, res) => {
         res.status(500).json({ error: "Error retrieving participants", details: error.message });
     }
 });
+
+console.log("✅ Finalizing participant.js setup...");
+console.log("✅ Registered participant routes:");
+router.stack.forEach((r) => {
+    if (r.route && r.route.path) {
+        console.log(`✅ Route: ${r.route.path} [${Object.keys(r.route.methods).join(",").toUpperCase()}]`);
+    }
+});
 console.log("✅ participant.js setup complete.");
+
+
 module.exports = router;

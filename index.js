@@ -144,6 +144,14 @@ portfinder.getPort((err, port) => {
         console.error('Error finding an available port:', err);
         process.exit(1);
     }
+
+  console.log("✅ Listing all registered routes:");
+  app._router.stack.forEach((r) => {
+      if (r.route && r.route.path) {
+          console.log(`✅ Registered route: ${r.route.path} [${Object.keys(r.route.methods).join(",").toUpperCase()}]`);
+      }
+  });
+
   
     app.listen(port, '127.0.0.1', () => {
         logger.info(`Server is running on http://127.0.0.1:${port}`);

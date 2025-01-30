@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const participantController = require("../controllers/participantcontroller");
 
-// Add a participant to a session
-router.post("/:sessionId/participants", async (req, res) => {
+// Explicitly define the correct path
+router.post("/sessions/:sessionId/participants", async (req, res) => {
     try {
         const { name, email, share } = req.body;
         const { sessionId } = req.params;
@@ -18,8 +18,8 @@ router.post("/:sessionId/participants", async (req, res) => {
     }
 });
 
-// Get participants in a session
-router.get("/:sessionId/participants", async (req, res) => {
+// Get all participants in a session
+router.get("/sessions/:sessionId/participants", async (req, res) => {
     try {
         const { sessionId } = req.params;
         if (!sessionId) {
@@ -30,21 +30,6 @@ router.get("/:sessionId/participants", async (req, res) => {
     } catch (error) {
         console.error("Error retrieving participants:", error);
         res.status(500).json({ error: "Error retrieving participants", details: error.message });
-    }
-});
-
-// Delete a participant
-router.delete("/:sessionId/participants/:participantId", async (req, res) => {
-    try {
-        const { sessionId, participantId } = req.params;
-        if (!sessionId || !participantId) {
-            return res.status(400).json({ error: "Session ID and Participant ID are required" });
-        }
-        await participantController.deleteParticipant(sessionId, participantId);
-        res.status(200).json({ message: "Participant deleted successfully" });
-    } catch (error) {
-        console.error("Error deleting participant:", error);
-        res.status(500).json({ error: "Error deleting participant", details: error.message });
     }
 });
 

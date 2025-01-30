@@ -190,3 +190,12 @@ process.on('SIGINT', async () => {
     process.exit(1);
   }
 });
+
+
+console.log("✅ Final listing of ALL registered routes:");
+app._router.stack.forEach((r) => {
+    if (r.route && r.route.path) {
+        console.log(`✅ Global Route: ${r.route.path} [${Object.keys(r.route.methods).join(",").toUpperCase()}]`);
+    }
+});
+console.log("✅ End of route listing.");

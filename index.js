@@ -68,8 +68,10 @@ const sessionRoute = require('./routes/session');
 app.use('/sessions', sessionRoute);  // /sessions routes for session-related actions
 
 // Participant route under session hierarchy
-const participantRoute = require('./routes/participant');
-app.use('/splid/sessions/:sessionId/participant', participantRoute);
+const participantRoute = require("./routes/participant");
+app.use("/splid/sessions", participantRoute);
+console.log("✅ Participant routes loaded successfully.");
+
 
 
 // Expense route under session hierarchy

@@ -132,8 +132,8 @@ portfinder.getPort((err, port) => {
         process.exit(1);
     }
 
-    app.listen(port, '0.0.0.0', () => {
-        logger.info(`Server is running on http://0.0.0.0:${port}`);
+    app.listen(port, '127.0.0.1', () => {
+        logger.info(`Server is running on http://127.0.0.1:${port}`);
 
         // Store the assigned port in a file so NGINX can read it
         fs.writeFileSync('/root/splid_app/api_port.txt', port.toString());

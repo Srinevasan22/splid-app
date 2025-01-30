@@ -6,10 +6,16 @@ const Session = require('../models/sessionmodel'); // Updated to match the new s
 // Add session
 router.post('/', async (req, res) => {  // No need for '/splid' here
     try {
-        const { name } = req.body;
-        if (!name) {
-            console.warn('Name is required but not provided in the request');
-            return res.status(400).json({ error: 'Name is required' });
+        const { name, groupId } = req.body;
+        if (!name || !groupId) {
+            console.warn('Name and groupId are required but not provided in the request');
+            return res.status(400).json({ error: 'Name and groupId are required' });
+        }
+
+        // Ensure groupId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(groupId)) {
+            console.warn(`Invalid groupId format received: ${groupId}`);
+            return res.status(400).json({ error: 'Invalid groupId format' });
         }
 
         // Check if a session with the same name already exists
@@ -19,7 +25,7 @@ router.post('/', async (req, res) => {  // No need for '/splid' here
             return res.status(409).json({ error: 'A session with this name already exists' });
         }
 
-        const session = new Session({ name });
+        const session = new Session({ name, groupId: new mongoose.Types.ObjectId(groupId) });
         await session.save();
         console.log(`Session created successfully: ${session._id}`);
         res.status(201).json({ message: 'Session added successfully', session });

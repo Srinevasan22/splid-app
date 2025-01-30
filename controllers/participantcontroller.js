@@ -3,40 +3,29 @@ const Participant = require("../models/participantmodel"); // Updated to lowerca
 
 // Add a new participant
 exports.addParticipant = async (req, res) => {
-  try {
-    const { name, email, share, sessionId } = req.body;
+    try {
+        console.log("Received POST request for adding participant:", req.body);
 
-    // Check for required fields
-    if (!name || share === undefined || !sessionId) {
-      return res.status(400).json({
-        message: "Missing required fields: 'name', 'share', and 'sessionId' are required",
-      });
+        const { name, email, share } = req.body;
+        const { sessionId } = req.params;
+
+        if (!sessionId || !name || share === undefined) {
+            console.error("Validation failed: Missing required fields.");
+            return res.status(400).json({ error: "Session ID, name, and share are required" });
+        }
+
+        const newParticipant = new Participant({ sessionId, name, email, share });
+        await newParticipant.save();
+
+        console.log("Participant added successfully:", newParticipant);
+        return res.status(201).json({ message: "Participant added successfully", participant: newParticipant });
+
+    } catch (error) {
+        console.error("Error adding participant:", error);
+        return res.status(500).json({ error: "Error adding participant", details: error.message });
     }
-
-    // Validate that share is a number
-    if (typeof share !== "number") {
-      return res.status(400).json({ message: "'share' must be a number" });
-    }
-
-    // Creating a new participant instance
-    const newParticipant = new Participant({
-      name,
-      email,
-      share,
-      sessionId,
-    });
-
-    // Saving the participant to the database
-    await newParticipant.save();
-    res.status(201).json({
-      message: "Participant added successfully",
-      participant: newParticipant,
-    });
-  } catch (error) {
-    console.error("Error adding participant:", error); // Log the full error for debugging
-    res.status(500).json({ message: "Error adding participant", error: error.message });
-  }
 };
+
 
 // Get all participants in a session
 exports.getParticipants = async (sessionId) => {

@@ -65,7 +65,7 @@ if (process.env.NODE_ENV === 'development' || process.env.CORS_ENABLED === 'true
 
 // Updated Routes for Splid API
 const sessionRoute = require('./routes/session');
-app.use('/splid/sessions', sessionRoute);
+app.use('/', sessionRoute);
 
 const participantRoute = require('./routes/participant');
 app.use('/splid/participants', participantRoute);

@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const participantController = require("../controllers/participantcontroller");
-const participantRoute = require("./routes/participant");
 
 // Updated route paths to align with index.js
 router.post("/:sessionId/participants", async (req, res) => {

@@ -125,6 +125,15 @@ app.get('/generate-sample-pdf', (req, res) => {
   doc.end();
 });
 
+
+app._router.stack.forEach((r) => {
+    if (r.route && r.route.path) {
+        console.log(`Registered route: ${r.route.path}`);
+    }
+});
+
+
+
 // Automatically find an available port starting from 3000
 portfinder.basePort = 3000;
 portfinder.getPort((err, port) => {
@@ -132,7 +141,7 @@ portfinder.getPort((err, port) => {
         console.error('Error finding an available port:', err);
         process.exit(1);
     }
-
+  
     app.listen(port, '127.0.0.1', () => {
         logger.info(`Server is running on http://127.0.0.1:${port}`);
 

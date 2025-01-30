@@ -2,31 +2,25 @@ const express = require("express");
 const router = express.Router();
 const participantController = require("../controllers/participantcontroller"); // Updated to match lowercase and singular naming
 
-// Route to add a new participant
-router.post("/add", async (req, res) => {
+// Updated route paths to align with index.js
+router.post("/:sessionId/participants", async (req, res) => {
     try {
-        const { sessionId, name } = req.body;
+        const { name } = req.body;
+        const { sessionId } = req.params;
         if (!sessionId || !name) {
             return res.status(400).json({ error: "Session ID and name are required" });
         }
-        const participant = await participantController.addParticipant(req.body);
-        res.status(201).json({
-            message: "Participant added successfully",
-            participant,
-        });
+        const participant = await participantController.addParticipant({ sessionId, name });
+        res.status(201).json({ message: "Participant added successfully", participant });
     } catch (error) {
         console.error("Error adding participant:", error);
-        res.status(500).json({
-            error: "Error adding participant",
-            details: error.message,
-        });
+        res.status(500).json({ error: "Error adding participant", details: error.message });
     }
 });
 
-// Route to get all participants in a specific session
-router.get("/session/:sessionId", async (req, res) => {
+router.get("/:sessionId/participants", async (req, res) => {
     try {
-        const sessionId = req.params.sessionId;
+        const { sessionId } = req.params;
         if (!sessionId) {
             return res.status(400).json({ error: "Session ID is required" });
         }
@@ -34,28 +28,21 @@ router.get("/session/:sessionId", async (req, res) => {
         res.status(200).json(participants);
     } catch (error) {
         console.error("Error retrieving participants:", error);
-        res.status(500).json({
-            error: "Error retrieving participants",
-            details: error.message,
-        });
+        res.status(500).json({ error: "Error retrieving participants", details: error.message });
     }
 });
 
-// Route to delete a specific participant by ID
-router.delete("/delete/:participantId", async (req, res) => {
+router.delete("/:sessionId/participants/:participantId", async (req, res) => {
     try {
-        const participantId = req.params.participantId;
-        if (!participantId) {
-            return res.status(400).json({ error: "Participant ID is required" });
+        const { sessionId, participantId } = req.params;
+        if (!sessionId || !participantId) {
+            return res.status(400).json({ error: "Session ID and Participant ID are required" });
         }
-        await participantController.deleteParticipant(participantId);
+        await participantController.deleteParticipant(sessionId, participantId);
         res.status(200).json({ message: "Participant deleted successfully" });
     } catch (error) {
         console.error("Error deleting participant:", error);
-        res.status(500).json({
-            error: "Error deleting participant",
-            details: error.message,
-        });
+        res.status(500).json({ error: "Error deleting participant", details: error.message });
     }
 });
 

@@ -3,7 +3,7 @@ const router = express.Router();
 const participantController = require("../controllers/participantcontroller");
 
 // Explicitly define the correct path
-router.post("/sessions/:sessionId/participants", async (req, res) => {
+router.post("/:sessionId/participants", async (req, res) => {
     try {
         const { name, email, share } = req.body;
         const { sessionId } = req.params;
@@ -19,7 +19,7 @@ router.post("/sessions/:sessionId/participants", async (req, res) => {
 });
 
 // Get all participants in a session
-router.get("/sessions/:sessionId/participants", async (req, res) => {
+router.get("/:sessionId/participants", async (req, res) => {
     try {
         const { sessionId } = req.params;
         if (!sessionId) {

@@ -74,7 +74,7 @@ const sessionRouter = express.Router();
 console.log("✅ Setting up session routes...");
 
 sessionRouter.use("/:sessionId/participants", participantRoute);
-app.use("/splid/sessions", sessionRouter);
+app.use("/sessions", sessionRouter);
 
 console.log("✅ Session routes fully loaded.");
 

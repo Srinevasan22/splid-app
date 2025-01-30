@@ -69,11 +69,14 @@ app.use('/sessions', sessionRoute);  // /sessions routes for session-related act
 
 // Participant route under session hierarchy
 const participantRoute = require("./routes/participant");
-console.log("✅ Loading participant.js...");
-app.use("/splid/sessions", participantRoute);
-console.log("✅ Participant routes loaded successfully.");
+const sessionRouter = express.Router();
 
+console.log("✅ Setting up session routes...");
 
+sessionRouter.use("/:sessionId/participants", participantRoute);
+app.use("/splid/sessions", sessionRouter);
+
+console.log("✅ Session routes fully loaded.");
 
 // Expense route under session hierarchy
 const expenseRoute = require('./routes/expense');

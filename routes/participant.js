@@ -2,8 +2,10 @@ const express = require("express");
 const router = express.Router();
 const participantController = require("../controllers/participantcontroller");
 
+
 // Explicitly define the correct path
 router.post("/:sessionId/participants", async (req, res) => {
+    console.log("✅ Registering participant routes...");
     try {
         await participantController.addParticipant(req, res);
     } catch (error) {

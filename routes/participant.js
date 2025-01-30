@@ -61,10 +61,7 @@ router.put("/update/:participantId", async (req, res) => {
         });
     } catch (error) {
         console.error("Error updating participant:", error);
-        res.status(500).json({
-            error: "Error updating participant",
-            details: error.message,
-        });
+        res.status(500).json({ error: "Error updating participant", details: error.message });
     }
 });
 
@@ -78,10 +75,7 @@ router.get("/all", async (req, res) => {
         res.status(200).json(allParticipants);
     } catch (error) {
         console.error("Error retrieving all participants:", error);
-        res.status(500).json({
-            error: "Error retrieving all participants",
-            details: error.message,
-        });
+        res.status(500).json({ error: "Error retrieving all participants", details: error.message });
     }
 });
 
@@ -96,10 +90,7 @@ router.get("/summary/:sessionId", async (req, res) => {
         res.status(200).json(summary);
     } catch (error) {
         console.error("Error retrieving session summary:", error);
-        res.status(500).json({
-            error: "Error retrieving session summary",
-            details: error.message,
-        });
+        res.status(500).json({ error: "Error retrieving session summary", details: error.message });
     }
 });
 
@@ -114,10 +105,7 @@ router.delete("/clear/:sessionId", async (req, res) => {
         res.status(200).json({ message: "Session cleared successfully" });
     } catch (error) {
         console.error("Error clearing session:", error);
-        res.status(500).json({
-            error: "Error clearing session",
-            details: error.message,
-        });
+        res.status(500).json({ error: "Error clearing session", details: error.message });
     }
 });
 
@@ -132,14 +120,8 @@ router.post("/calculate-share/:sessionId", async (req, res) => {
         res.status(200).json(share);
     } catch (error) {
         console.error("Error calculating share:", error);
-        res.status(500).json({
-            error: "Error calculating share",
-            details: error.message,
-        });
+        res.status(500).json({ error: "Error calculating share", details: error.message });
     }
 });
-
-// Include additional routes
-router.use(participantRoute);
 
 module.exports = router;

@@ -63,33 +63,37 @@ if (process.env.NODE_ENV === 'development' || process.env.CORS_ENABLED === 'true
   );
 }
 
-// Updated Routes for Splid API
+// Routes for Session, Participant, and Expense
 const sessionRoute = require('./routes/session');
-app.use('/', sessionRoute);
+app.use('/sessions', sessionRoute);  // /sessions routes for session-related actions
 
+// Participant route under session hierarchy
 const participantRoute = require('./routes/participant');
-app.use('/splid/participants', participantRoute);
+app.use('/sessions/:sessionId/participants', participantRoute);  // /sessions/{sessionId}/participants routes for participants of a session
 
+// Expense route under session hierarchy
 const expenseRoute = require('./routes/expense');
-app.use('/splid/expenses', expenseRoute);
+app.use('/sessions/:sessionId/expenses', expenseRoute);  // /sessions/{sessionId}/expenses routes for expenses of a session
+
+// Add other routes (Report, ActivityLog, etc.) in the same manner
 
 const reportRoute = require('./routes/report');
-app.use('/splid/reports', reportRoute);
+app.use('/reports', reportRoute);  // /reports routes for reporting actions
 
 const userRoute = require('./routes/user');
-app.use('/splid/users', userRoute);
+app.use('/users', userRoute);  // /users routes for user-related actions
 
 const activityLogRoute = require('./routes/activityLog');
-app.use('/splid/activityLogs', activityLogRoute);
+app.use('/logs', activityLogRoute);  // /logs routes for activity logs
 
 const settlementRoute = require('./routes/settlement');
-app.use('/splid/settlements', settlementRoute);
+app.use('/settlements', settlementRoute);  // /settlements routes for settlement actions
 
 const transactionRoute = require('./routes/transaction');
-app.use('/splid/transactions', transactionRoute);
+app.use('/transactions', transactionRoute);  // /transactions routes for transaction actions
 
 const notificationRoute = require('./routes/notification');
-app.use('/splid/notifications', notificationRoute);
+app.use('/notifications', notificationRoute);  // /notifications routes for notification actions
 
 // Health check route to verify server is running
 app.get('/health', (req, res) => {
@@ -146,7 +150,7 @@ portfinder.getPort((err, port) => {
           }
           console.log(`NGINX updated successfully: ${stdout}`);
       });
-
+      
     });
 });
 

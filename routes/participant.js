@@ -68,7 +68,7 @@ router.put("/update/:participantId", async (req, res) => {
     }
 });
 
-// Route to get all participants across all sessions
+// Route to get all participants across all sessions.
 router.get("/all", async (req, res) => {
     try {
         const allParticipants = await participantController.getAllParticipants();

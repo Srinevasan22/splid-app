@@ -8,6 +8,7 @@ const winston = require('winston'); // Logging
 const net = require('net'); // Used for port checking
 const portfinder = require('portfinder'); // Automatically find available port
 const fs = require('fs');
+const { exec } = require('child_process');
 
 const app = express();
 
@@ -136,6 +137,20 @@ portfinder.getPort((err, port) => {
 
         // Store the assigned port in a file so NGINX can read it
         fs.writeFileSync('/root/splid_app/api_port.txt', port.toString());
+
+      // Run the script to update NGINX with the new port
+      exec('/root/update_nginx.sh', (error, stdout, stderr) => {
+          if (error) {
+              console.error(`Error updating NGINX: ${error.message}`);
+              return;
+          }
+          if (stderr) {
+              console.error(`NGINX update stderr: ${stderr}`);
+              return;
+          }
+          console.log(`NGINX updated successfully: ${stdout}`);
+      });
+      
     });
 });
 

@@ -69,6 +69,7 @@ app.use('/sessions', sessionRoute);  // /sessions routes for session-related act
 
 // Participant route under session hierarchy
 const participantRoute = require("./routes/participant");
+console.log("✅ Loading participant.js...");
 app.use("/splid/sessions", participantRoute);
 console.log("✅ Participant routes loaded successfully.");
 

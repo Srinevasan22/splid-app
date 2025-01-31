@@ -26,7 +26,6 @@ exports.addParticipant = async (req, res) => {
     }
 };
 
-
 // Get all participants in a session
 exports.getParticipants = async (sessionId) => {
   try {
@@ -51,6 +50,32 @@ exports.getParticipantsBySession = async (req, res) => {
     res.status(200).json(participants);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving participants", error: error.message });
+  }
+};
+
+// ✅ NEW: Get a specific participant by ID within a session
+exports.getParticipantById = async (req, res) => {
+  try {
+    const { sessionId, participantId } = req.params;
+
+    if (!sessionId || !participantId) {
+      return res.status(400).json({ error: "Session ID and Participant ID are required" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(participantId)) {
+      return res.status(400).json({ error: "Invalid participant ID format" });
+    }
+
+    const participant = await Participant.findOne({ _id: participantId, sessionId });
+
+    if (!participant) {
+      return res.status(404).json({ error: "Participant not found" });
+    }
+
+    res.status(200).json(participant);
+  } catch (error) {
+    console.error("Error retrieving participant:", error);
+    res.status(500).json({ error: "Error retrieving participant", details: error.message });
   }
 };
 

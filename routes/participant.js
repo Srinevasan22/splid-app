@@ -38,7 +38,9 @@ router.get("/", async (req, res) => {
 // Get a specific participant by ID within a session
 router.get("/:participantId", async (req, res) => { 
     try {
-        const { sessionId, participantId } = req.params;
+        const { participantId } = req.params;
+        const sessionId = req.baseUrl.split('/')[2]; // Extract sessionId from the URL
+
         if (!sessionId || !participantId) {
             return res.status(400).json({ error: "Session ID and Participant ID are required" });
         }
@@ -54,6 +56,7 @@ router.get("/:participantId", async (req, res) => {
         res.status(500).json({ error: "Error retrieving participant", details: error.message });
     }
 });
+
 
 
 console.log("✅ Finalizing participant.js setup...");

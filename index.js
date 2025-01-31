@@ -79,7 +79,13 @@ console.log("✅ Session routes fully loaded.");
 
 // Expense route under session hierarchy
 const expenseRoute = require('./routes/expense');
-app.use('/sessions/:sessionId/expenses', expenseRoute);  // Ensure expenses are correctly nested
+const expenseRouter = express.Router({ mergeParams: true });
+
+console.log("✅ Setting up expense routes...");
+expenseRouter.use("/:sessionId/expenses", expenseRoute);
+app.use("/splid/sessions", expenseRouter); // Ensure expenses route is under /splid
+
+console.log("✅ Expense routes fully loaded.");
 
 // Add other routes (Report, ActivityLog, etc.) in the same manner
 

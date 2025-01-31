@@ -6,8 +6,9 @@ const PDFDocument = require('pdfkit'); // Import PDF generation library
 // ✅ Add a new expense
 exports.addExpense = async (req, res) => {
   try {
-    console.log("✅ Received request to add expense:", req.body);
-    console.log("✅ Extracted sessionId from params:", req.params);
+    console.log("✅ Received request to add expense:");
+    console.log("➡️ Request body:", req.body);
+    console.log("➡️ Request params:", req.params);
 
     const { sessionId } = req.params;
     const { description, amount, paidBy, splitAmong } = req.body;
@@ -17,21 +18,21 @@ exports.addExpense = async (req, res) => {
       return res.status(400).json({ error: "Session ID, description, amount, paidBy, and splitAmong are required" });
     }
 
-    console.log("✅ Validating sessionId:", sessionId);
-    console.log("✅ Validating paidBy:", paidBy);
-    console.log("✅ Validating splitAmong:", splitAmong);
+    console.log("✅ Extracted sessionId:", sessionId);
+    console.log("✅ Validating sessionId format...");
 
-    // Validate ObjectId format
     if (!mongoose.Types.ObjectId.isValid(sessionId)) {
       console.error("❌ Invalid sessionId format:", sessionId);
       return res.status(400).json({ error: "Invalid session ID format" });
     }
 
+    console.log("✅ Validating paidBy format:", paidBy);
     if (!mongoose.Types.ObjectId.isValid(paidBy)) {
       console.error("❌ Invalid paidBy format:", paidBy);
       return res.status(400).json({ error: "Invalid paidBy ID format" });
     }
 
+    console.log("✅ Validating splitAmong participant IDs...");
     for (const participantId of splitAmong) {
       if (!mongoose.Types.ObjectId.isValid(participantId)) {
         console.error(`❌ Invalid participantId format: ${participantId}`);
@@ -58,6 +59,7 @@ exports.addExpense = async (req, res) => {
     res.status(500).json({ error: "Error adding expense", details: error.message });
   }
 };
+
 
 
 

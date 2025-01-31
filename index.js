@@ -108,7 +108,11 @@ const activityLogRoute = require('./routes/activityLog');
 app.use('/logs', activityLogRoute);  // /logs routes for activity logs
 
 const settlementRoute = require('./routes/settlement');
+
+console.log("✅ Registering settlement routes...");
 sessionRouter.use('/:sessionId', settlementRoute); // Attach settlement under session
+app.use('/splid/sessions', sessionRouter);  // Ensure `splid/sessions/:sessionId/settle-up` is registered
+console.log("✅ Settlement routes fully loaded.");
 
 const transactionRoute = require('./routes/transaction');
 app.use('/transactions', transactionRoute);  // /transactions routes for transaction actions

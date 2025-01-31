@@ -65,7 +65,7 @@ if (process.env.NODE_ENV === 'development' || process.env.CORS_ENABLED === 'true
 
 // Routes for Session, Participant, and Expense
 const sessionRoute = require('./routes/session');
-app.use('/splid/sessions', sessionRoute);  // Ensure sessions are correctly routed
+app.use('/sessions', sessionRoute);  // /sessions routes for session-related actions
 
 // Participant route under session hierarchy
 const participantRoute = require("./routes/participant");
@@ -73,19 +73,14 @@ const sessionRouter = express.Router({ mergeParams: true }); // Ensure params ar
 
 console.log("✅ Setting up session routes...");
 sessionRouter.use("/:sessionId/participants", participantRoute);
-app.use("/splid/sessions", sessionRouter); // Ensure participants route is correctly nested
+app.use("/sessions", sessionRouter);
 
 console.log("✅ Session routes fully loaded.");
 
-// Expense route under participant hierarchy
+// Expense route under session hierarchy
 const expenseRoute = require('./routes/expense');
-const participantRouter = express.Router({ mergeParams: true });
+app.use('/sessions/:sessionId/expenses', expenseRoute);  // /sessions/{sessionId}/expenses routes for expenses of a session
 
-console.log("✅ Setting up participant routes...");
-participantRouter.use("/:participantId/expenses", expenseRoute);
-app.use("/splid/sessions/:sessionId/participants", participantRouter); // Ensure expenses route is under participant
-
-console.log("✅ Expense routes fully loaded.");
 
 // Add other routes (Report, ActivityLog, etc.) in the same manner
 

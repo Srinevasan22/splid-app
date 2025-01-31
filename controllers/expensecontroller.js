@@ -3,12 +3,12 @@ const Expense = require('../models/expensemodel'); // Updated to lowercase singu
 const Participant = require('../models/participantmodel'); // Updated to lowercase singular
 const PDFDocument = require('pdfkit'); // Import PDF generation library
 
-// ✅ Add a new expense (Updated with Debugging)
+// ✅ Add a new expense with improved debugging
 exports.addExpense = async (req, res) => {
   try {
     console.log("✅ Received request to add expense:");
-    console.log("➡️ Request body:", JSON.stringify(req.body, null, 2));
-    console.log("➡️ Request params:", req.params);
+    console.log("➡️ Raw Request Body:", JSON.stringify(req.body, null, 2));
+    console.log("➡️ Raw Request Params:", req.params);
 
     const { sessionId, participantId } = req.params;
     const { description, amount, currency, paidBy, splitType, splitDetails } = req.body;
@@ -55,6 +55,7 @@ exports.addExpense = async (req, res) => {
     res.status(500).json({ error: "Error adding expense", details: error.message });
   }
 };
+
 
 
 // ✅ Get all expenses for a session

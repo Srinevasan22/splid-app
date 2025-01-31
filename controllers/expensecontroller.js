@@ -6,17 +6,32 @@ const PDFDocument = require('pdfkit'); // Import PDF generation library
 // ✅ Add a new expense
 exports.addExpense = async (req, res) => {
   try {
-    const { sessionId } = req.params;
+    const { sessionId } = req.params; // Ensure sessionId is correctly extracted
     const { description, amount, paidBy, splitAmong } = req.body;
 
+    console.log("✅ Received request to add expense:", req.body);
+    console.log("✅ Extracted sessionId from params:", sessionId);
+
+    // Validate required fields
     if (!sessionId || !description || !amount || !paidBy || !splitAmong) {
+      console.error("❌ Missing required fields.");
       return res.status(400).json({ error: "Session ID, description, amount, paidBy, and splitAmong are required" });
     }
 
+    // Validate ObjectId format
     if (!mongoose.Types.ObjectId.isValid(sessionId) || !mongoose.Types.ObjectId.isValid(paidBy)) {
+      console.error("❌ Invalid sessionId or paidBy format.");
       return res.status(400).json({ error: "Invalid session ID or paidBy format" });
     }
 
+    for (const participantId of splitAmong) {
+      if (!mongoose.Types.ObjectId.isValid(participantId)) {
+        console.error(`❌ Invalid participantId format: ${participantId}`);
+        return res.status(400).json({ error: "Invalid splitAmong participant ID format" });
+      }
+    }
+
+    // Create and save the new expense
     const newExpense = new Expense({
       sessionId,
       description,
@@ -26,12 +41,15 @@ exports.addExpense = async (req, res) => {
     });
 
     await newExpense.save();
+
+    console.log("✅ Expense added successfully:", newExpense);
     res.status(201).json({ message: "Expense added successfully", expense: newExpense });
   } catch (error) {
-    console.error("Error adding expense:", error);
+    console.error("❌ Error adding expense:", error);
     res.status(500).json({ error: "Error adding expense", details: error.message });
   }
 };
+
 
 // ✅ Get all expenses for a session
 exports.getExpensesBySession = async (req, res) => {

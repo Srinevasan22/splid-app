@@ -20,7 +20,7 @@ router.post("/", async (req, res) => { // Remove "/:sessionId/participants" (alr
     }
 });
 
-// Get all participants in a session
+// Get all participants in a session.
 router.get("/", async (req, res) => { // Remove "/:sessionId/participants"
     try {
         const { sessionId } = req.params;

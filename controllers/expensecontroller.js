@@ -3,17 +3,17 @@ const Expense = require('../models/expensemodel'); // Updated to lowercase singu
 const Participant = require('../models/participantmodel'); // Updated to lowercase singular
 const PDFDocument = require('pdfkit'); // Import PDF generation library
 
-// ✅ Add a new expense with improved debugging
+// ✅ Add a new expense with detailed debugging
 exports.addExpense = async (req, res) => {
   try {
-    console.log("✅ Received request to add expense:");
+    console.log("✅ Received request to add expense");
     console.log("➡️ Raw Request Body:", JSON.stringify(req.body, null, 2));
     console.log("➡️ Raw Request Params:", req.params);
 
     const { sessionId, participantId } = req.params;
     const { description, amount, currency, paidBy, splitType, splitDetails } = req.body;
 
-    console.log(`✅ Extracted values:
+    console.log(`✅ Extracted Values:
       - sessionId: ${sessionId}
       - participantId: ${participantId}
       - description: ${description}
@@ -24,9 +24,13 @@ exports.addExpense = async (req, res) => {
       - splitDetails: ${JSON.stringify(splitDetails)}
     `);
 
+    // 🚨 Check if the necessary fields are missing
     if (!sessionId || !participantId || !description || !amount || !paidBy || !splitType || !splitDetails) {
       console.error("❌ Missing required fields.");
-      return res.status(400).json({ error: "Session ID, Participant ID, description, amount, paidBy, splitType, and splitDetails are required" });
+      return res.status(400).json({
+        error: "Session ID, Participant ID, description, amount, paidBy, splitType, and splitDetails are required",
+        receivedBody: req.body
+      });
     }
 
     if (!mongoose.Types.ObjectId.isValid(sessionId) || !mongoose.Types.ObjectId.isValid(participantId) || !mongoose.Types.ObjectId.isValid(paidBy)) {
@@ -55,6 +59,7 @@ exports.addExpense = async (req, res) => {
     res.status(500).json({ error: "Error adding expense", details: error.message });
   }
 };
+
 
 
 

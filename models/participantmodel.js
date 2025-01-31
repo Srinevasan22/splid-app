@@ -13,6 +13,10 @@ const participantSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  balance: { // ✅ NEW: Ensure balance exists
+    type: Number,
+    default: 0 
+  },
   sessionId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'session',

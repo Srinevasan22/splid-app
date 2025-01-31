@@ -69,7 +69,7 @@ app.use('/sessions', sessionRoute);  // /sessions routes for session-related act
 
 // Participant route under session hierarchy
 const participantRoute = require("./routes/participant");
-const sessionRouter = express.Router();
+const sessionRouter = express.Router({ mergeParams: true });
 
 console.log("✅ Setting up session routes...");
 

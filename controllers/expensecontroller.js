@@ -3,47 +3,64 @@ const Expense = require('../models/expensemodel'); // Updated to lowercase singu
 const Participant = require('../models/participantmodel'); // Updated to lowercase singular
 const PDFDocument = require('pdfkit'); // Import PDF generation library
 
-// Add a new expense
+// ✅ Add a new expense
 exports.addExpense = async (req, res) => {
   try {
-    const { description, amount, paidBy, splitAmong, sessionId } = req.body;
+    const { sessionId } = req.params;
+    const { description, amount, paidBy, splitAmong } = req.body;
 
-    if (!description || !amount || !paidBy || !splitAmong || !sessionId) {
-      return res.status(400).json({ message: "Missing required fields" });
+    if (!sessionId || !description || !amount || !paidBy || !splitAmong) {
+      return res.status(400).json({ error: "Session ID, description, amount, paidBy, and splitAmong are required" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(sessionId) || !mongoose.Types.ObjectId.isValid(paidBy)) {
+      return res.status(400).json({ error: "Invalid session ID or paidBy format" });
     }
 
     const newExpense = new Expense({
+      sessionId,
       description,
       amount,
       paidBy,
-      splitAmong,
-      sessionId
+      splitAmong
     });
 
     await newExpense.save();
     res.status(201).json({ message: "Expense added successfully", expense: newExpense });
   } catch (error) {
     console.error("Error adding expense:", error);
-    res.status(500).json({ message: "Error adding expense", error: error.message });
+    res.status(500).json({ error: "Error adding expense", details: error.message });
   }
 };
 
-// Get all expenses for a session
-exports.getExpenses = async (req, res) => {
+// ✅ Get all expenses for a session
+exports.getExpensesBySession = async (req, res) => {
   try {
     const { sessionId } = req.params;
-    const expenses = await Expense.find({ sessionId }).populate('paidBy splitAmong');
+
+    if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+      return res.status(400).json({ error: "Invalid session ID format" });
+    }
+
+    const expenses = await Expense.find({ sessionId })
+      .populate('paidBy', 'name email') // Populate paidBy field with participant details
+      .populate('splitAmong', 'name email'); // Populate splitAmong array with participant details
+
     res.status(200).json(expenses);
   } catch (error) {
     console.error("Error retrieving expenses:", error);
-    res.status(500).json({ message: "Error retrieving expenses", error: error.message });
+    res.status(500).json({ error: "Error retrieving expenses", details: error.message });
   }
 };
 
-// Calculate the balance for each participant in a session
+// ✅ Calculate the balance for each participant in a session
 exports.calculateBalance = async (req, res) => {
   try {
     const { sessionId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+      return res.status(400).json({ error: "Invalid session ID format" });
+    }
 
     const participants = await Participant.find({ sessionId });
     const expenses = await Expense.find({ sessionId });
@@ -70,24 +87,28 @@ exports.calculateBalance = async (req, res) => {
     res.status(200).json(balances);
   } catch (error) {
     console.error("Error calculating balances:", error);
-    res.status(500).json({ message: "Error calculating balances", error: error.message });
+    res.status(500).json({ error: "Error calculating balances", details: error.message });
   }
 };
 
-// Settle up between two participants
+// ✅ Settle up between two participants
 exports.settleUp = async (req, res) => {
   try {
     const { sessionId, payerId, receiverId, amount } = req.body;
 
     if (!sessionId || !payerId || !receiverId || !amount) {
-      return res.status(400).json({ message: "Missing required fields: 'sessionId', 'payerId', 'receiverId', and 'amount' are required." });
+      return res.status(400).json({ error: "Session ID, payerId, receiverId, and amount are required" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(sessionId) || !mongoose.Types.ObjectId.isValid(payerId) || !mongoose.Types.ObjectId.isValid(receiverId)) {
+      return res.status(400).json({ error: "Invalid session ID, payerId, or receiverId format" });
     }
 
     const payer = await Participant.findById(payerId);
     const receiver = await Participant.findById(receiverId);
 
-    if (!payer || !receiver || payer.sessionId !== sessionId || receiver.sessionId !== sessionId) {
-      return res.status(400).json({ message: "Invalid payer or receiver ID or they do not belong to this session." });
+    if (!payer || !receiver || payer.sessionId.toString() !== sessionId || receiver.sessionId.toString() !== sessionId) {
+      return res.status(400).json({ error: "Invalid payer or receiver ID or they do not belong to this session." });
     }
 
     payer.balance -= amount;
@@ -99,14 +120,18 @@ exports.settleUp = async (req, res) => {
     res.status(200).json({ message: "Settlement successful", balances: { [payerId]: payer.balance, [receiverId]: receiver.balance } });
   } catch (error) {
     console.error("Error settling up:", error);
-    res.status(500).json({ message: "Error settling up", error: error.message });
+    res.status(500).json({ error: "Error settling up", details: error.message });
   }
 };
 
-// Generate a session report
+// ✅ Generate a session report as a PDF
 exports.generateSessionReport = async (req, res) => {
   try {
     const { sessionId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+      return res.status(400).json({ error: "Invalid session ID format" });
+    }
 
     const expenses = await Expense.find({ sessionId });
     const participants = await Participant.find({ sessionId });
@@ -173,6 +198,6 @@ exports.generateSessionReport = async (req, res) => {
 
   } catch (error) {
     console.error("Error generating report:", error);
-    res.status(500).json({ message: "Error generating report", error: error.message });
+    res.status(500).json({ error: "Error generating report", details: error.message });
   }
 };

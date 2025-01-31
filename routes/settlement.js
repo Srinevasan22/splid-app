@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true }); // Ensure sessionId is passed
-const settlementController = require('../controllers/settlementcontroller');
+const settlementController = require('../controllers/settlementcontroller'); // Ensure correct path
 
 console.log("✅ Setting up settlement routes...");
 

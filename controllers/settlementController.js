@@ -3,11 +3,13 @@ const Participant = require('../models/participantmodel');
 
 exports.settleUp = async (req, res) => {
   try {
-    const { sessionId, payerId, receiverId, amount } = req.body;
+      const { payerId, receiverId, amount } = req.body;
+      const { sessionId } = req.params;  // ✅ Get sessionId from URL parameters
 
-    if (!sessionId || !payerId || !receiverId || !amount) {
-      return res.status(400).json({ error: "Session ID, payerId, receiverId, and amount are required" });
-    }
+      if (!sessionId || !payerId || !receiverId || !amount) {
+        return res.status(400).json({ error: "Session ID, payerId, receiverId, and amount are required" });
+      }
+
 
     if (!mongoose.Types.ObjectId.isValid(sessionId) || !mongoose.Types.ObjectId.isValid(payerId) || !mongoose.Types.ObjectId.isValid(receiverId)) {
       return res.status(400).json({ error: "Invalid session ID, payerId, or receiverId format" });

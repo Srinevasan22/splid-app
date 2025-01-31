@@ -21,7 +21,7 @@ router.post("/", async (req, res) => { // Remove "/:sessionId/participants" (alr
 });
 
 // Get all participants in a session.
-router.get("/", async (req, res) => { // Remove "/:sessionId/participants"
+router.get("/", async (req, res) => { 
     try {
         const { sessionId } = req.params;
         if (!sessionId) {
@@ -34,6 +34,27 @@ router.get("/", async (req, res) => { // Remove "/:sessionId/participants"
         res.status(500).json({ error: "Error retrieving participants", details: error.message });
     }
 });
+
+// Get a specific participant by ID within a session
+router.get("/:participantId", async (req, res) => { 
+    try {
+        const { sessionId, participantId } = req.params;
+        if (!sessionId || !participantId) {
+            return res.status(400).json({ error: "Session ID and Participant ID are required" });
+        }
+
+        const participant = await participantController.getParticipantById(sessionId, participantId);
+        if (!participant) {
+            return res.status(404).json({ error: "Participant not found" });
+        }
+
+        res.status(200).json(participant);
+    } catch (error) {
+        console.error("Error retrieving participant:", error);
+        res.status(500).json({ error: "Error retrieving participant", details: error.message });
+    }
+});
+
 
 console.log("✅ Finalizing participant.js setup...");
 console.log("✅ Registered participant routes:");

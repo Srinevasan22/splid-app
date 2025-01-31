@@ -6,22 +6,30 @@ const PDFDocument = require('pdfkit'); // Import PDF generation library
 // ✅ Add a new expense
 exports.addExpense = async (req, res) => {
   try {
-    const { sessionId } = req.params; // Ensure sessionId is correctly extracted
+    console.log("✅ Received request to add expense:", req.body);
+    console.log("✅ Extracted sessionId from params:", req.params);
+
+    const { sessionId } = req.params;
     const { description, amount, paidBy, splitAmong } = req.body;
 
-    console.log("✅ Received request to add expense:", req.body);
-    console.log("✅ Extracted sessionId from params:", sessionId);
-
-    // Validate required fields
     if (!sessionId || !description || !amount || !paidBy || !splitAmong) {
       console.error("❌ Missing required fields.");
       return res.status(400).json({ error: "Session ID, description, amount, paidBy, and splitAmong are required" });
     }
 
+    console.log("✅ Validating sessionId:", sessionId);
+    console.log("✅ Validating paidBy:", paidBy);
+    console.log("✅ Validating splitAmong:", splitAmong);
+
     // Validate ObjectId format
-    if (!mongoose.Types.ObjectId.isValid(sessionId) || !mongoose.Types.ObjectId.isValid(paidBy)) {
-      console.error("❌ Invalid sessionId or paidBy format.");
-      return res.status(400).json({ error: "Invalid session ID or paidBy format" });
+    if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+      console.error("❌ Invalid sessionId format:", sessionId);
+      return res.status(400).json({ error: "Invalid session ID format" });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(paidBy)) {
+      console.error("❌ Invalid paidBy format:", paidBy);
+      return res.status(400).json({ error: "Invalid paidBy ID format" });
     }
 
     for (const participantId of splitAmong) {
@@ -31,7 +39,8 @@ exports.addExpense = async (req, res) => {
       }
     }
 
-    // Create and save the new expense
+    console.log("✅ Creating expense with validated data...");
+
     const newExpense = new Expense({
       sessionId,
       description,
@@ -49,6 +58,7 @@ exports.addExpense = async (req, res) => {
     res.status(500).json({ error: "Error adding expense", details: error.message });
   }
 };
+
 
 
 // ✅ Get all expenses for a session

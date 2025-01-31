@@ -97,9 +97,7 @@ app.use('/sessions/:sessionId/balances', balanceRoute);
 
 console.log("✅ Participant and expense routes fully loaded.");
 
-
 // Add other routes (Report, ActivityLog, etc.) in the same manner
-
 const reportRoute = require('./routes/report');
 app.use('/reports', reportRoute);  // /reports routes for reporting actions
 
@@ -110,7 +108,7 @@ const activityLogRoute = require('./routes/activityLog');
 app.use('/logs', activityLogRoute);  // /logs routes for activity logs
 
 const settlementRoute = require('./routes/settlement');
-app.use('/settlements', settlementRoute);  // /settlements routes for settlement actions
+sessionRouter.use('/:sessionId', settlementRoute); // Attach settlement under session
 
 const transactionRoute = require('./routes/transaction');
 app.use('/transactions', transactionRoute);  // /transactions routes for transaction actions
@@ -147,14 +145,11 @@ app.get('/generate-sample-pdf', (req, res) => {
   doc.end();
 });
 
-
 app._router.stack.forEach((r) => {
     if (r.route && r.route.path) {
         console.log(`Registered route: ${r.route.path}`);
     }
 });
-
-
 
 // Automatically find an available port starting from 3000
 portfinder.basePort = 3000;
@@ -206,7 +201,6 @@ process.on('SIGINT', async () => {
     process.exit(1);
   }
 });
-
 
 console.log("✅ Final listing of ALL registered routes:");
 app._router.stack.forEach((r) => {

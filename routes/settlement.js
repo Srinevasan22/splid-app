@@ -1,8 +1,12 @@
 const express = require('express');
-const settlementController = require('../controllers/settlementController');
-const router = express.Router();
+const router = express.Router({ mergeParams: true }); // Ensures sessionId is passed
+const { settleUp } = require('../controllers/expensecontroller');
 
-// Correct route path without /splid prefix
-router.post('/settle', settlementController.recordSettlement);
+console.log("✅ Setting up settlement routes...");
+
+// Settlement route under sessions
+router.post('/settle-up', settleUp);
+
+console.log("✅ Settlement route registered.");
 
 module.exports = router;

@@ -11,11 +11,11 @@ exports.addExpense = async (req, res) => {
     console.log("➡️ Request params:", req.params);
 
     const { sessionId } = req.params;
-    const { description, amount, paidBy, splitAmong } = req.body;
+    const { description, amount, paidBy, splitAmong, currency, splitType } = req.body;
 
-    if (!sessionId || !description || !amount || !paidBy || !splitAmong) {
+    if (!sessionId || !description || !amount || !paidBy || !splitAmong || !currency || !splitType) {
       console.error("❌ Missing required fields.");
-      return res.status(400).json({ error: "Session ID, description, amount, paidBy, and splitAmong are required" });
+      return res.status(400).json({ error: "Session ID, description, amount, paidBy, splitAmong, currency, and splitType are required" });
     }
 
     console.log("✅ Extracted sessionId:", sessionId);
@@ -47,7 +47,9 @@ exports.addExpense = async (req, res) => {
       description,
       amount,
       paidBy,
-      splitAmong
+      splitAmong,
+      currency,
+      splitType
     });
 
     await newExpense.save();
@@ -59,9 +61,6 @@ exports.addExpense = async (req, res) => {
     res.status(500).json({ error: "Error adding expense", details: error.message });
   }
 };
-
-
-
 
 // ✅ Get all expenses for a session
 exports.getExpensesBySession = async (req, res) => {

@@ -3,23 +3,32 @@ const Expense = require('../models/expensemodel'); // Updated to lowercase singu
 const Participant = require('../models/participantmodel'); // Updated to lowercase singular
 const PDFDocument = require('pdfkit'); // Import PDF generation library
 
-// ✅ Add a new expense
+// ✅ Add a new expense (Updated with Debugging)
 exports.addExpense = async (req, res) => {
   try {
     console.log("✅ Received request to add expense:");
-    console.log("➡️ Request body:", req.body);
+    console.log("➡️ Request body:", JSON.stringify(req.body, null, 2));
     console.log("➡️ Request params:", req.params);
 
     const { sessionId, participantId } = req.params;
     const { description, amount, currency, paidBy, splitType, splitDetails } = req.body;
 
-    // Ensure all required fields are present
+    console.log(`✅ Extracted values:
+      - sessionId: ${sessionId}
+      - participantId: ${participantId}
+      - description: ${description}
+      - amount: ${amount}
+      - currency: ${currency}
+      - paidBy: ${paidBy}
+      - splitType: ${splitType}
+      - splitDetails: ${JSON.stringify(splitDetails)}
+    `);
+
     if (!sessionId || !participantId || !description || !amount || !paidBy || !splitType || !splitDetails) {
       console.error("❌ Missing required fields.");
       return res.status(400).json({ error: "Session ID, Participant ID, description, amount, paidBy, splitType, and splitDetails are required" });
     }
 
-    // Validate IDs
     if (!mongoose.Types.ObjectId.isValid(sessionId) || !mongoose.Types.ObjectId.isValid(participantId) || !mongoose.Types.ObjectId.isValid(paidBy)) {
       console.error("❌ Invalid ID format.");
       return res.status(400).json({ error: "Invalid ID format for session, participant, or paidBy" });
@@ -46,6 +55,7 @@ exports.addExpense = async (req, res) => {
     res.status(500).json({ error: "Error adding expense", details: error.message });
   }
 };
+
 
 // ✅ Get all expenses for a session
 exports.getExpensesBySession = async (req, res) => {

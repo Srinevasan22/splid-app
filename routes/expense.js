@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router({ mergeParams: true }); // Ensure sessionId & participantId are passed correctly
 const Expense = require('../models/expensemodel'); // Ensure correct model usage
 const expenseController = require('../controllers/expensecontroller');
+const mongoose = require('mongoose'); // ✅ Fix: Import mongoose
 
 console.log("✅ Setting up expense routes...");
 

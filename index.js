@@ -80,12 +80,23 @@ console.log("✅ Session routes fully loaded.");
 
 // Expense route under session hierarchy
 const expenseRoute = require('./routes/expense');
-console.log("✅ Setting up participant routes...");
+const balanceRoute = require('./routes/balance'); // NEW Balance Route
 const participantRouter = express.Router({ mergeParams: true });
+
+console.log("✅ Setting up participant routes...");
+
 participantRouter.use('/:participantId/expenses', expenseRoute);  // Nest expenses under participants
 sessionRouter.use('/:sessionId/participants', participantRouter);
-app.use('/splid/sessions', sessionRouter);
+app.use('/splid/sessions', sessionRouter);  // Main route
+
+// ✅ Register standalone expense route
+app.use('/sessions/:sessionId/expenses', expenseRoute); 
+
+// ✅ Register the missing balance route separately
+app.use('/sessions/:sessionId/balances', balanceRoute);
+
 console.log("✅ Participant and expense routes fully loaded.");
+
 
 // Add other routes (Report, ActivityLog, etc.) in the same manner
 

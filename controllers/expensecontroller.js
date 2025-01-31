@@ -102,15 +102,15 @@ exports.calculateBalance = async (req, res) => {
     });
 
     expenses.forEach(expense => {
-      const amountPerPerson = expense.amount / expense.splitAmong.length;
+      const amountPerPerson = expense.amount / expense.splitDetails.length;
 
       if (balances[expense.paidBy]) {
         balances[expense.paidBy].balance += expense.amount;
       }
 
-      expense.splitAmong.forEach(participantId => {
-        if (balances[participantId]) {
-          balances[participantId].balance -= amountPerPerson;
+      expense.splitDetails.forEach(participant => {
+        if (balances[participant.participantId]) {
+          balances[participant.participantId].balance -= participant.share;
         }
       });
     });
@@ -121,6 +121,7 @@ exports.calculateBalance = async (req, res) => {
     res.status(500).json({ error: "Error calculating balances", details: error.message });
   }
 };
+
 
 // ✅ Settle up between two participants
 exports.settleUp = async (req, res) => {

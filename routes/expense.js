@@ -4,6 +4,7 @@ const router = express.Router({ mergeParams: true }); // Ensure sessionId & part
 const Expense = require('../models/expensemodel'); // Ensure correct model usage
 const expenseController = require('../controllers/expensecontroller');
 const mongoose = require('mongoose'); // ✅ Fix: Import mongoose
+router.get("/balances", expenseController.calculateBalance);
 
 console.log("✅ Setting up expense routes...");
 

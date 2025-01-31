@@ -1,11 +1,11 @@
 const express = require('express');
-const router = express.Router({ mergeParams: true }); // Ensure sessionId is passed
-const settlementController = require('../controllers/settlementcontroller'); // Ensure correct path
+const router = express.Router({ mergeParams: true }); // Ensure sessionId is passed correctly
+const settlementController = require('../controllers/settlementController'); // Ensure correct path
 
 console.log("✅ Setting up settlement routes...");
 
 // Register the `/settle-up` route under `/sessions/:sessionId/settle-up`
-router.post('/settle-up', settlementController.settleUp);
+router.post('/', settlementController.settleUp);  // Remove extra `/settle-up`
 
 console.log("✅ Settlement routes registered.");
 

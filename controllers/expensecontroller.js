@@ -10,46 +10,31 @@ exports.addExpense = async (req, res) => {
     console.log("➡️ Request body:", req.body);
     console.log("➡️ Request params:", req.params);
 
-    const { sessionId } = req.params;
-    const { description, amount, paidBy, splitAmong, currency, splitType } = req.body;
+    const { sessionId, participantId } = req.params;
+    const { description, amount, currency, paidBy, splitType, splitDetails } = req.body;
 
-    if (!sessionId || !description || !amount || !paidBy || !splitAmong || !currency || !splitType) {
+    // Ensure all required fields are present
+    if (!sessionId || !participantId || !description || !amount || !paidBy || !splitType || !splitDetails) {
       console.error("❌ Missing required fields.");
-      return res.status(400).json({ error: "Session ID, description, amount, paidBy, splitAmong, currency, and splitType are required" });
+      return res.status(400).json({ error: "Session ID, Participant ID, description, amount, paidBy, splitType, and splitDetails are required" });
     }
 
-    console.log("✅ Extracted sessionId:", sessionId);
-    console.log("✅ Validating sessionId format...");
-
-    if (!mongoose.Types.ObjectId.isValid(sessionId)) {
-      console.error("❌ Invalid sessionId format:", sessionId);
-      return res.status(400).json({ error: "Invalid session ID format" });
-    }
-
-    console.log("✅ Validating paidBy format:", paidBy);
-    if (!mongoose.Types.ObjectId.isValid(paidBy)) {
-      console.error("❌ Invalid paidBy format:", paidBy);
-      return res.status(400).json({ error: "Invalid paidBy ID format" });
-    }
-
-    console.log("✅ Validating splitAmong participant IDs...");
-    for (const participantId of splitAmong) {
-      if (!mongoose.Types.ObjectId.isValid(participantId)) {
-        console.error(`❌ Invalid participantId format: ${participantId}`);
-        return res.status(400).json({ error: "Invalid splitAmong participant ID format" });
-      }
+    // Validate IDs
+    if (!mongoose.Types.ObjectId.isValid(sessionId) || !mongoose.Types.ObjectId.isValid(participantId) || !mongoose.Types.ObjectId.isValid(paidBy)) {
+      console.error("❌ Invalid ID format.");
+      return res.status(400).json({ error: "Invalid ID format for session, participant, or paidBy" });
     }
 
     console.log("✅ Creating expense with validated data...");
 
     const newExpense = new Expense({
       sessionId,
+      paidBy,
       description,
       amount,
-      paidBy,
-      splitAmong,
       currency,
-      splitType
+      splitType,
+      splitDetails
     });
 
     await newExpense.save();

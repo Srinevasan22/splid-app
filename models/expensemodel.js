@@ -9,17 +9,17 @@ const expenseSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  currency: {  // NEW FIELD
+  currency: {  
     type: String,
     required: true,
     default: "USD"
   },
-  splitType: {  // NEW FIELD
+  splitType: {  
     type: String,
     enum: ["equal", "percentage", "shares"],
     required: true
   },
-  splitDetails: [{  // NEW FIELD
+  splitDetails: [{  
     participantId: { type: mongoose.Schema.Types.ObjectId, ref: 'participant' },
     share: Number
   }],
@@ -29,7 +29,8 @@ const expenseSchema = new mongoose.Schema({
     required: true
   },
   sessionId: {
-    type: String,
+    type: mongoose.Schema.Types.ObjectId, // Ensure sessionId is stored correctly
+    ref: 'session',
     required: true
   },
   createdAt: {

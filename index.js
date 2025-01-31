@@ -69,10 +69,9 @@ app.use('/sessions', sessionRoute);  // /sessions routes for session-related act
 
 // Participant route under session hierarchy
 const participantRoute = require("./routes/participant");
-const sessionRouter = express.Router({ mergeParams: true });
+const sessionRouter = express.Router({ mergeParams: true }); // Ensure params are accessible
 
 console.log("✅ Setting up session routes...");
-
 sessionRouter.use("/:sessionId/participants", participantRoute);
 app.use("/sessions", sessionRouter);
 
@@ -81,6 +80,7 @@ console.log("✅ Session routes fully loaded.");
 // Expense route under session hierarchy
 const expenseRoute = require('./routes/expense');
 app.use('/sessions/:sessionId/expenses', expenseRoute);  // /sessions/{sessionId}/expenses routes for expenses of a session
+
 
 // Add other routes (Report, ActivityLog, etc.) in the same manner
 

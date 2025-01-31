@@ -1,13 +1,18 @@
 console.log("✅ participant.js is being executed...");
 const express = require("express");
-const router = express.Router();
+const router = express.Router({ mergeParams: true }); // Ensure sessionId is passed correctly
 const participantController = require("../controllers/participantcontroller");
 
 console.log("✅ Setting up participant routes...");
+
 // Explicitly define the correct path
-router.post("/:sessionId/participants", async (req, res) => {
+router.post("/", async (req, res) => { // Remove "/:sessionId/participants" (already included from parent)
     console.log("✅ Registering participant routes...");
     try {
+        const { sessionId } = req.params;
+        if (!sessionId) {
+            return res.status(400).json({ error: "Session ID is required" });
+        }
         await participantController.addParticipant(req, res);
     } catch (error) {
         console.error("Error adding participant:", error);
@@ -16,7 +21,7 @@ router.post("/:sessionId/participants", async (req, res) => {
 });
 
 // Get all participants in a session
-router.get("/:sessionId/participants", async (req, res) => {
+router.get("/", async (req, res) => { // Remove "/:sessionId/participants"
     try {
         const { sessionId } = req.params;
         if (!sessionId) {
@@ -38,6 +43,5 @@ router.stack.forEach((r) => {
     }
 });
 console.log("✅ participant.js setup complete.");
-
 
 module.exports = router;

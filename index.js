@@ -44,6 +44,7 @@ mongoose
 // Middleware to parse JSON
 app.use(express.json());
 app.use(helmet());
+app.use(express.urlencoded({ extended: true })); // ✅ Ensures URL-encoded form data is parsed
 
 // Use morgan for logging HTTP requests in development mode
 if (process.env.NODE_ENV === 'development') {

@@ -4,17 +4,18 @@ const Session = require('../models/sessionmodel'); // Updated to lowercase
 // Add a new session
 exports.addSession = async (req, res) => {
     try {
+        console.log("🔍 Checking user authentication:", req.user); // ✅ Log full `req.user`
+        console.log("✅ Extracted Email:", req.user ? req.user.email : "❌ EMAIL UNDEFINED");
+
         const { name } = req.body;
 
-        console.log("🔍 Checking user authentication:", req.user); // ✅ Debugging
-
         if (!req.user || !req.user.email) {
-            console.error("🚨 Email is missing in req.user!");
+            console.error("🚨 Email is missing in req.user!", req.user);
             return res.status(401).json({ message: "Unauthorized. User email is missing in authentication." });
         }
 
         const email = req.user.email;  // ✅ Extract email from authenticated user
-        console.log("✅ Email extracted:", email); // ✅ Debugging
+        console.log("✅ Final Email to be saved:", email); // ✅ Debugging
 
         if (!name) {
             return res.status(400).json({ message: "Session name is required" });
@@ -27,13 +28,18 @@ exports.addSession = async (req, res) => {
         }
 
         // ✅ Create a new session with the extracted email
-        const newSession = new Session({ name, email, participants: [email] });
+        const newSession = new Session({
+            name: name,
+            email: email, // 🔍 Ensure this field is being set
+            participants: [email],
+        });
 
+        console.log("✅ New session object before saving:", newSession); // Debugging
         await newSession.save();
 
         res.status(201).json({ message: "Session created successfully", session: newSession });
     } catch (error) {
-        console.error("Error creating session:", error);
+        console.error("❌ Error creating session:", error);
         res.status(500).json({ message: "Error creating session", error: error.message });
     }
 };

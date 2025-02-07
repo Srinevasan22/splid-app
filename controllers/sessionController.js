@@ -6,15 +6,17 @@ exports.addSession = async (req, res) => {
         console.log("🔍 Checking user authentication:", req.user);
         const { name } = req.body;
 
+        // Ensure user email is present
         if (!req.user || !req.user.email) {
             console.error("🚨 Email is missing in req.user!", req.user);
             return res.status(401).json({ message: "Unauthorized. User email is missing in authentication." });
         }
 
-        // Ensure email is always set
-        const email = req.user.email || "no-email@example.com";  // Fallback if email is undefined
+        // Ensure email is always set, use fallback if not set
+        const email = req.user.email || "no-email@example.com";  // Force email to be non-null
         console.log("✅ Final Email to be saved:", email);
 
+        // Ensure session name is provided
         if (!name) {
             return res.status(400).json({ message: "Session name is required" });
         }
@@ -27,11 +29,11 @@ exports.addSession = async (req, res) => {
         // Create a new session with the email
         const newSession = new Session({
             name: name,
-            email: email,  // Ensure this is passed to the model
+            email: email,  // Ensure email is being passed to the model
             participants: [email],
         });
 
-        // Log the session object before saving to ensure email is correctly set
+        // Log the session object before saving
         console.log("✅ New session object before saving:", newSession);
 
         // Validate the session object before saving
@@ -53,3 +55,4 @@ exports.addSession = async (req, res) => {
         res.status(500).json({ message: "Error creating session", error: error.message });
     }
 };
+

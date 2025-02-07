@@ -4,7 +4,7 @@ const sessionSchema = new mongoose.Schema({
     name: { 
         type: String, 
         required: true
-    }, 
+    },
     email: {  // Ensure email is properly set
         type: String,
         required: true

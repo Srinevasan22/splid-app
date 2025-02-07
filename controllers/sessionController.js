@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Session = require('../models/sessionmodel');
+const { getDb } = require('../db');  // Import MongoDB connection function
 
 exports.addSession = async (req, res) => {
     try {
@@ -20,22 +21,19 @@ exports.addSession = async (req, res) => {
             return res.status(400).json({ message: "Session name is required" });
         }
 
-        // 🚨 TEMPORARY DEBUGGING FIX: HARD-CODE EMAIL TO CONFIRM IF MONGOOSE ACCEPTS IT
-        email = "debug-test@example.com";
-
-        console.log("✅ Creating session with:", { name, email });
-
-        const newSession = new Session({
+        // ✅ Directly insert into MongoDB using native driver
+        const db = getDb();  // Get MongoDB connection
+        const newSession = {
             name: name,
-            email: email, // Hardcoded email for testing
+            email: email,  // Ensure email is being passed to MongoDB
             participants: [email],
-        });
+            createdAt: new Date()
+        };
 
-        console.log("✅ New session object before saving:", newSession.toObject());
+        console.log("✅ Directly inserting into MongoDB:", newSession);
+        const result = await db.collection('sessions').insertOne(newSession);
 
-        await newSession.save();
-
-        res.status(201).json({ message: "Session created successfully", session: newSession });
+        res.status(201).json({ message: "Session created successfully", session: result.ops[0] });
     } catch (error) {
         console.error("❌ Error creating session:", error);
         res.status(500).json({ message: "Error creating session", error: error.message });

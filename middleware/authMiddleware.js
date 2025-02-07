@@ -5,20 +5,21 @@ const authMiddleware = (req, res, next) => {
     const token = req.header('Authorization');
 
     if (!token) {
+        console.error("🚨 No token provided!");
         return res.status(401).json({ message: 'Unauthorized. No token provided.' });
     }
 
     try {
         const decoded = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET);
 
-        console.log("🔍 Decoded JWT Payload:", decoded);  // ✅ Debugging: See if email is included
+        console.log("🔍 Decoded JWT Payload:", decoded); // ✅ Debugging step
 
         if (!decoded.email) {
-            console.error("🚨 Missing email in decoded token!");
+            console.error("🚨 Missing email in decoded token!", decoded);
             return res.status(400).json({ message: "Authentication failed. Email is missing from token." });
         }
 
-        req.user = decoded;
+        req.user = decoded; // ✅ Ensure `req.user.email` exists
         next();
     } catch (error) {
         console.error("❌ Token verification failed:", error.message);

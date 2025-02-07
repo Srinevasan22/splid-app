@@ -29,12 +29,12 @@ exports.sendMagicLink = async (req, res) => {
 
         // Configure nodemailer with SMTP settings
         const transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST || "smtp.gmail.com", // ✅ Configurable SMTP provider
-            port: process.env.SMTP_PORT || 587, // ✅ Use correct SMTP port
-            secure: false, // ✅ Set to true for SSL
+            host: "smtp.hostinger.com", // Hostinger's SMTP server
+            port: 465,                 // SSL/TLS Port
+            secure: true,              // SSL enabled
             auth: {
-                user: process.env.EMAIL_USER, // Your email
-                pass: process.env.EMAIL_PASS  // Your email password or app password
+                user: process.env.EMAIL_USER, // Hostinger email address
+                pass: process.env.EMAIL_PASS  // Hostinger email password
             }
         });
 

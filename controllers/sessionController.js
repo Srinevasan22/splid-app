@@ -3,8 +3,7 @@ const Session = require('../models/sessionmodel');
 
 exports.addSession = async (req, res) => {
     try {
-        console.log("🔍 Checking user authentication:", req.user); // ✅ Log full `req.user`
-        console.log("✅ Extracted Email:", req.user ? req.user.email : "❌ EMAIL UNDEFINED");
+        console.log("🔍 Checking user authentication:", req.user);
 
         const { name } = req.body;
 
@@ -13,27 +12,25 @@ exports.addSession = async (req, res) => {
             return res.status(401).json({ message: "Unauthorized. User email is missing in authentication." });
         }
 
-        const email = req.user.email;
-        console.log("✅ Final Email to be saved:", email); // ✅ Debugging before saving
+        const email = req.user.email || "no-email@example.com"; // ✅ Ensure email is never undefined
+        console.log("✅ Final Email to be saved:", email);
 
         if (!name) {
             return res.status(400).json({ message: "Session name is required" });
         }
 
-        // ✅ Check if a session with this name already exists for this email
         const existingSession = await Session.findOne({ name, email });
         if (existingSession) {
             return res.status(409).json({ message: "A session with this name already exists for this user." });
         }
 
-        // ✅ Debugging: Ensure email is correctly added to the new session
         const newSession = new Session({
             name: name,
-            email: email, // 🔍 Ensure this field is being set
+            email: email, // ✅ Now email is always defined
             participants: [email],
         });
 
-        console.log("✅ New session object before saving:", newSession); // Debugging
+        console.log("✅ New session object before saving:", newSession);
         await newSession.save();
 
         res.status(201).json({ message: "Session created successfully", session: newSession });

@@ -6,11 +6,15 @@ exports.addSession = async (req, res) => {
     try {
         const { name } = req.body;
 
+        console.log("🔍 Checking user authentication:", req.user); // ✅ Debugging
+
         if (!req.user || !req.user.email) {
+            console.error("🚨 Email is missing in req.user!");
             return res.status(401).json({ message: "Unauthorized. User email is missing in authentication." });
         }
 
         const email = req.user.email;  // ✅ Extract email from authenticated user
+        console.log("✅ Email extracted:", email); // ✅ Debugging
 
         if (!name) {
             return res.status(400).json({ message: "Session name is required" });
@@ -33,9 +37,6 @@ exports.addSession = async (req, res) => {
         res.status(500).json({ message: "Error creating session", error: error.message });
     }
 };
-
-
-
 
 // Get sessions for a specific user by email
 exports.getUserSessions = async (req, res) => {

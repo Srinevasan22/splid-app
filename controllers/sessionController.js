@@ -1,7 +1,6 @@
-const mongoose = require('mongoose'); // ✅ Import mongoose to validate ObjectId
-const Session = require('../models/sessionmodel'); // Updated to lowercase
+const mongoose = require('mongoose');
+const Session = require('../models/sessionmodel');
 
-// Add a new session
 exports.addSession = async (req, res) => {
     try {
         console.log("🔍 Checking user authentication:", req.user); // ✅ Log full `req.user`
@@ -15,7 +14,7 @@ exports.addSession = async (req, res) => {
         }
 
         const email = req.user.email;
-        console.log("✅ Final Email to be saved:", email); // ✅ Debugging
+        console.log("✅ Final Email to be saved:", email); // ✅ Debugging before saving
 
         if (!name) {
             return res.status(400).json({ message: "Session name is required" });
@@ -41,21 +40,5 @@ exports.addSession = async (req, res) => {
     } catch (error) {
         console.error("❌ Error creating session:", error);
         res.status(500).json({ message: "Error creating session", error: error.message });
-    }
-};
-
-// Get sessions for a specific user by email
-exports.getUserSessions = async (req, res) => {
-    try {
-        const email = req.user.email;  // ✅ Extract email from authenticated user
-        if (!email) {
-            return res.status(400).json({ error: "User email is required" });
-        }
-
-        const sessions = await Session.find({ participants: email }).sort({ createdAt: -1 }); // ✅ Fetch sessions where user is a participant
-        res.status(200).json(sessions);
-    } catch (error) {
-        console.error("Error retrieving sessions:", error);
-        res.status(500).json({ message: "Error retrieving sessions", error: error.message });
     }
 };

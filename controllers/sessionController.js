@@ -6,9 +6,8 @@ exports.addSession = async (req, res) => {
         console.log("🔍 Checking request body:", req.body);
         console.log("🔍 Checking user authentication:", req.user);
 
-        // Ensure both name and email are extracted correctly
         const { name } = req.body;
-        const email = req.body.email || req.user.email; // Prioritize req.body, fallback to req.user.email
+        let email = req.body.email || req.user.email;
 
         if (!email) {
             console.error("🚨 Email is missing in request body AND req.user!", req.body, req.user);
@@ -21,12 +20,14 @@ exports.addSession = async (req, res) => {
             return res.status(400).json({ message: "Session name is required" });
         }
 
-        // Log before saving to ensure email exists in the session object
+        // 🚨 TEMPORARY DEBUGGING FIX: HARD-CODE EMAIL TO CONFIRM IF MONGOOSE ACCEPTS IT
+        email = "debug-test@example.com";
+
         console.log("✅ Creating session with:", { name, email });
 
         const newSession = new Session({
             name: name,
-            email: email, // Ensure email is explicitly passed
+            email: email, // Hardcoded email for testing
             participants: [email],
         });
 

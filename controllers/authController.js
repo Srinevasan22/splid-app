@@ -1,6 +1,7 @@
 const User = require('../models/usermodel');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+require('dotenv').config(); // ✅ Ensure environment variables are loaded
 
 exports.sendMagicLink = async (req, res) => {
     try {
@@ -23,11 +24,14 @@ exports.sendMagicLink = async (req, res) => {
         }
 
         // Generate a temporary login token
-        const token = jwt.sign({ userToken: user.userToken }, process.env.JWT_SECRET, { expiresIn: '15m' });
+        const secretKey = process.env.JWT_SECRET || "default_secret_key"; // ✅ Fallback Secret Key
+        const token = jwt.sign({ userToken: user.userToken }, secretKey, { expiresIn: '15m' });
 
-        // Send login link via email (Using nodemailer SMTP)
+        // Configure nodemailer with SMTP settings
         const transporter = nodemailer.createTransport({
-            service: "Gmail", // Change if using another provider
+            host: process.env.SMTP_HOST || "smtp.gmail.com", // ✅ Configurable SMTP provider
+            port: process.env.SMTP_PORT || 587, // ✅ Use correct SMTP port
+            secure: false, // ✅ Set to true for SSL
             auth: {
                 user: process.env.EMAIL_USER, // Your email
                 pass: process.env.EMAIL_PASS  // Your email password or app password

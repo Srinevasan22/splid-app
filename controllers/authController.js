@@ -25,7 +25,7 @@ exports.sendMagicLink = async (req, res) => {
 
         // Generate a temporary login token
         const secretKey = process.env.JWT_SECRET || "default_secret_key"; // ✅ Fallback Secret Key
-        const token = jwt.sign({ userToken: user.userToken }, secretKey, { expiresIn: '15m' });
+        const token = jwt.sign({ userToken: user.userToken, email: user.email }, secretKey, { expiresIn: '15m' }); // ✅ Ensure email is included
 
         // Configure nodemailer with SMTP settings
         const transporter = nodemailer.createTransport({

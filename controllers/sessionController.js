@@ -12,6 +12,12 @@ exports.addSession = async (req, res) => {
             return res.status(400).json({ message: "Session name is required" });
         }
 
+        // ✅ Check if session already exists for this user
+        const existingSession = await Session.findOne({ name, email });
+        if (existingSession) {
+            return res.status(409).json({ message: "A session with this name already exists for this user." });
+        }
+
         // ✅ Create a new session with name and email
         const newSession = new Session({ name, email });
 

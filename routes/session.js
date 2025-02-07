@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Session = require('../models/sessionmodel'); // Updated to match the new singular and lowercase naming
-const authMiddleware = require('../middleware/auth'); // Ensure authentication middleware is used
+const authMiddleware = require('../middleware/authMiddleware'); // Ensure authentication middleware is used
 
 // Add session (Updated: Removed groupId, Added createdBy and participants)
 router.post('/', authMiddleware, async (req, res) => {

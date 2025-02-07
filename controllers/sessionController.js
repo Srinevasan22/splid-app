@@ -23,13 +23,24 @@ exports.addSession = async (req, res) => {
             return res.status(409).json({ message: "A session with this name already exists for this user." });
         }
 
+        // Log the session object before saving
         const newSession = new Session({
             name: name,
-            email: email,  // Make sure this is passed to the model
+            email: email,  // Ensure this is passed to the model
             participants: [email],
         });
 
         console.log("✅ New session object before saving:", newSession);
+
+        // Debugging the session object and checking the save process
+        newSession.validate((error) => {
+            if (error) {
+                console.error("❌ Validation failed:", error.errors);
+            } else {
+                console.log("✅ Session is ready to be saved!");
+            }
+        });
+
         await newSession.save();
 
         res.status(201).json({ message: "Session created successfully", session: newSession });

@@ -5,14 +5,15 @@ const Session = require('../models/sessionmodel'); // Updated to lowercase
 exports.addSession = async (req, res) => {
     try {
         const { name } = req.body;  // Removed groupId, since it's no longer needed
+        const email = req.user.email;  // ✅ Use email for session association
 
         // ✅ Ensure name is provided
         if (!name) {
             return res.status(400).json({ message: "Session name is required" });
         }
 
-        // ✅ Create a new session with name and createdBy
-        const newSession = new Session({ name, createdBy: req.user._id, participants: [req.user._id] });
+        // ✅ Create a new session with name and email
+        const newSession = new Session({ name, email });
 
         // Save the new session to the database
         await newSession.save();
@@ -24,12 +25,15 @@ exports.addSession = async (req, res) => {
     }
 };
 
-// Get all sessions
-exports.getSessions = async (req, res) => {
+// Get sessions for a specific user by email
+exports.getUserSessions = async (req, res) => {
     try {
-        // ✅ Populate participants instead of groupId
-        const sessions = await Session.find().populate("participants").sort({ createdAt: -1 });
+        const email = req.user.email;  // ✅ Extract email from authenticated user
+        if (!email) {
+            return res.status(400).json({ error: "User email is required" });
+        }
 
+        const sessions = await Session.find({ email }).sort({ createdAt: -1 });
         res.status(200).json(sessions);
     } catch (error) {
         console.error("Error retrieving sessions:", error);

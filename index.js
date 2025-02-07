@@ -9,11 +9,13 @@ const net = require('net'); // Used for port checking
 const portfinder = require('portfinder'); // Automatically find available port
 const fs = require('fs');
 const { exec } = require('child_process');
+const authRoute = require('./routes/auth');
 
 const app = express();
 
 require('./models/usermodel');  // ✅ Ensures User model is registered
 
+app.use('/auth', authRoute);
 
 // Configure Winston logger
 const logger = winston.createLogger({

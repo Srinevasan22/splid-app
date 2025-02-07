@@ -1,14 +1,14 @@
 const express = require('express');
-const router = express.Router({ mergeParams: true }); // Ensure sessionId is passed correctly
-const settlementController = require('../controllers/settlementController'); // Ensure correct path
+const router = express.Router({ mergeParams: true });
+const settlementController = require('../controllers/settlementController'); // Ensure the correct path
 
 console.log("✅ Setting up settlement routes...");
 
-// Register the `/settle-up` route under `/sessions/:sessionId/settle-up`
-router.post('/', settlementController.settleUp);  // Remove extra `/settle-up`
+// Register settlement routes
+router.post('/', settlementController.settleUp);  // POST request works fine
 
-// ✅ Route to get all settlements for a session
-router.get('/', settlementController.getSessionSettlements);
+// 🚨 Check if `getSessionSettlements` exists
+router.get('/', settlementController.getSessionSettlements); 
 
 console.log("✅ Settlement routes registered.");
 

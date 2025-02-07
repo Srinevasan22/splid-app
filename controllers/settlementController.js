@@ -36,7 +36,8 @@ exports.settleUp = async (req, res) => {
         toUserId: receiverId,
         amount,
         currency: "USD", // Default currency, can be dynamic
-        paymentMethod
+        paymentMethod,
+        date: new Date() // ✅ Added timestamp for settlement record
       });
       await settlement.save();
 
@@ -50,10 +51,26 @@ exports.settleUp = async (req, res) => {
         balances: {
           [payerId]: updatedPayer.balance,
           [receiverId]: updatedReceiver.balance
-        }
+        },
+        settlementDetails: settlement // ✅ Return full settlement details
       });
   } catch (error) {
     console.error("Error settling up:", error);
     res.status(500).json({ error: "Error settling up", details: error.message });
+  }
+};
+
+// ✅ Fetch all settlements for a session
+exports.getSessionSettlements = async (req, res) => {
+  try {
+    const { sessionId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+      return res.status(400).json({ error: "Invalid session ID format" });
+    }
+    const settlements = await Settlement.find({ sessionId }).populate("fromUserId toUserId");
+    res.status(200).json(settlements);
+  } catch (error) {
+    console.error("Error retrieving settlements:", error);
+    res.status(500).json({ error: "Error retrieving settlements", details: error.message });
   }
 };

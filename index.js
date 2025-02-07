@@ -15,6 +15,10 @@ const app = express();
 
 require('./models/usermodel');  // ✅ Ensures User model is registered
 
+// ✅ Ensure JSON Parsing Middleware is Enabled
+app.use(express.json());  
+app.use(express.urlencoded({ extended: true }));
+
 app.use('/auth', authRoute);
 
 // Configure Winston logger

@@ -12,7 +12,7 @@ const authMiddleware = (req, res, next) => {
     try {
         const decoded = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET);
 
-        console.log("🔍 Decoded JWT Payload:", decoded); // ✅ Debugging step
+        console.log("🔍 Decoded JWT Payload in Middleware:", decoded);  // ✅ Debugging step
 
         if (!decoded.email) {
             console.error("🚨 Missing email in decoded token!", decoded);
@@ -20,6 +20,8 @@ const authMiddleware = (req, res, next) => {
         }
 
         req.user = decoded; // ✅ Ensure `req.user.email` exists
+        console.log("✅ User assigned in `req.user`:", req.user); // Log final user data
+
         next();
     } catch (error) {
         console.error("❌ Token verification failed:", error.message);

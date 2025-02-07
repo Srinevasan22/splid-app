@@ -14,7 +14,7 @@ exports.addSession = async (req, res) => {
             return res.status(401).json({ message: "Unauthorized. User email is missing in authentication." });
         }
 
-        const email = req.user.email;  // ✅ Extract email from authenticated user
+        const email = req.user.email;
         console.log("✅ Final Email to be saved:", email); // ✅ Debugging
 
         if (!name) {

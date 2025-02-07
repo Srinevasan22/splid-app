@@ -12,6 +12,9 @@ const { exec } = require('child_process');
 
 const app = express();
 
+require('./models/usermodel');  // ✅ Ensures User model is registered
+
+
 // Configure Winston logger
 const logger = winston.createLogger({
   level: 'info',

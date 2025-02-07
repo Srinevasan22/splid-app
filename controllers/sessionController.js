@@ -19,7 +19,7 @@ exports.addSession = async (req, res) => {
         }
 
         // ✅ Create a new session with name and email
-        const newSession = new Session({ name, email });
+        const newSession = new Session({ name, email, participants: [email] }); // ✅ Add user to participants automatically
 
         // Save the new session to the database
         await newSession.save();
@@ -39,7 +39,7 @@ exports.getUserSessions = async (req, res) => {
             return res.status(400).json({ error: "User email is required" });
         }
 
-        const sessions = await Session.find({ email }).sort({ createdAt: -1 });
+        const sessions = await Session.find({ participants: email }).sort({ createdAt: -1 }); // ✅ Fetch sessions where user is a participant
         res.status(200).json(sessions);
     } catch (error) {
         console.error("Error retrieving sessions:", error);

@@ -5,9 +5,8 @@ const sessionSchema = new mongoose.Schema({
         type: String, 
         required: true
     }, 
-    createdBy: {  // Track who created the session
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user',
+    email: {  // Track who created the session using email
+        type: String,
         required: true
     },
     participants: [{  // List of users in the session

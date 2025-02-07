@@ -4,11 +4,14 @@ const Session = require('../models/sessionmodel');
 exports.addSession = async (req, res) => {
     try {
         console.log("🔍 Checking request body:", req.body);
+        console.log("🔍 Checking user authentication:", req.user);
 
-        const { name, email } = req.body;  // Get email from req.body instead of req.user
+        // Ensure both name and email are extracted correctly
+        const { name } = req.body;
+        const email = req.body.email || req.user.email; // Prioritize req.body, fallback to req.user.email
 
         if (!email) {
-            console.error("🚨 Email is missing in request body!", req.body);
+            console.error("🚨 Email is missing in request body AND req.user!", req.body, req.user);
             return res.status(400).json({ message: "Email is required in request body." });
         }
 
@@ -18,14 +21,12 @@ exports.addSession = async (req, res) => {
             return res.status(400).json({ message: "Session name is required" });
         }
 
-        const existingSession = await Session.findOne({ name, email });
-        if (existingSession) {
-            return res.status(409).json({ message: "A session with this name already exists for this user." });
-        }
+        // Log before saving to ensure email exists in the session object
+        console.log("✅ Creating session with:", { name, email });
 
         const newSession = new Session({
             name: name,
-            email: email,  // Email is now explicitly passed from req.body
+            email: email, // Ensure email is explicitly passed
             participants: [email],
         });
 

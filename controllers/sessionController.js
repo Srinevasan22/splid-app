@@ -6,7 +6,6 @@ exports.addSession = async (req, res) => {
     try {
         const { name } = req.body;
 
-        // ✅ Ensure `req.user` is defined and contains `email`
         if (!req.user || !req.user.email) {
             return res.status(401).json({ message: "Unauthorized. User email is missing in authentication." });
         }
@@ -17,7 +16,7 @@ exports.addSession = async (req, res) => {
             return res.status(400).json({ message: "Session name is required" });
         }
 
-        // ✅ Check if a session with the same name already exists for this user
+        // ✅ Check if a session with this name already exists for this email
         const existingSession = await Session.findOne({ name, email });
         if (existingSession) {
             return res.status(409).json({ message: "A session with this name already exists for this user." });
@@ -26,7 +25,6 @@ exports.addSession = async (req, res) => {
         // ✅ Create a new session with the extracted email
         const newSession = new Session({ name, email, participants: [email] });
 
-        // Save the new session to the database
         await newSession.save();
 
         res.status(201).json({ message: "Session created successfully", session: newSession });
@@ -35,6 +33,7 @@ exports.addSession = async (req, res) => {
         res.status(500).json({ message: "Error creating session", error: error.message });
     }
 };
+
 
 
 

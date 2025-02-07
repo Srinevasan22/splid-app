@@ -4,20 +4,15 @@ const Session = require('../models/sessionmodel'); // Updated to lowercase
 // Add a new session
 exports.addSession = async (req, res) => {
     try {
-        const { name, groupId } = req.body;  // Now we're expecting groupId in the request
-
-        // ✅ Ensure groupId is provided and valid before checking ObjectId
-        if (!groupId || !mongoose.Types.ObjectId.isValid(groupId)) {
-            return res.status(400).json({ message: "Invalid or missing groupId format" });
-        }
+        const { name } = req.body;  // Removed groupId, since it's no longer needed
 
         // ✅ Ensure name is provided
         if (!name) {
             return res.status(400).json({ message: "Session name is required" });
         }
 
-        // ✅ Create a new session with name and groupId
-        const newSession = new Session({ name, groupId });
+        // ✅ Create a new session with name and createdBy
+        const newSession = new Session({ name, createdBy: req.user._id, participants: [req.user._id] });
 
         // Save the new session to the database
         await newSession.save();
@@ -32,8 +27,8 @@ exports.addSession = async (req, res) => {
 // Get all sessions
 exports.getSessions = async (req, res) => {
     try {
-        // ✅ Populate groupId to ensure correct data fetching
-        const sessions = await Session.find().populate("groupId").sort({ createdAt: -1 });
+        // ✅ Populate participants instead of groupId
+        const sessions = await Session.find().populate("participants").sort({ createdAt: -1 });
 
         res.status(200).json(sessions);
     } catch (error) {

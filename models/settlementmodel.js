@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const settlementSchema = new mongoose.Schema({
-  groupId: { type: mongoose.Schema.Types.ObjectId, ref: 'group', required: true },
+  sessionId: { type: mongoose.Schema.Types.ObjectId, ref: 'session', required: true }, // Updated to session-based
   fromUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
   toUserId: { type: mongoose.Schema.Types.ObjectId, ref: 'user', required: true },
   amount: { type: Number, required: true },

@@ -2,30 +2,18 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Session = require('../models/sessionmodel'); // Updated to match the new singular and lowercase naming
+const authMiddleware = require('../middleware/auth'); // Ensure authentication middleware is used
 
-// Add session
-router.post('/', async (req, res) => {  // No need for '/splid' here
+// Add session (Updated: Removed groupId, Added createdBy and participants)
+router.post('/', authMiddleware, async (req, res) => {
     try {
-        const { name, groupId } = req.body;
-        if (!name || !groupId) {
-            console.warn('Name and groupId are required but not provided in the request');
-            return res.status(400).json({ error: 'Name and groupId are required' });
+        const { name } = req.body;
+        if (!name) {
+            console.warn('Name is required but not provided in the request');
+            return res.status(400).json({ error: 'Name is required' });
         }
 
-        // Ensure groupId is a valid ObjectId
-        if (!mongoose.Types.ObjectId.isValid(groupId)) {
-            console.warn(`Invalid groupId format received: ${groupId}`);
-            return res.status(400).json({ error: 'Invalid groupId format' });
-        }
-
-        // Check if a session with the same name already exists
-        const existingSession = await Session.findOne({ name });
-        if (existingSession) {
-            console.warn(`A session with name "${name}" already exists`);
-            return res.status(409).json({ error: 'A session with this name already exists' });
-        }
-
-        const session = new Session({ name, groupId: new mongoose.Types.ObjectId(groupId) });
+        const session = new Session({ name, createdBy: req.user._id, participants: [req.user._id] });
         await session.save();
         console.log(`Session created successfully: ${session._id}`);
         res.status(201).json({ message: 'Session added successfully', session });
@@ -35,10 +23,28 @@ router.post('/', async (req, res) => {  // No need for '/splid' here
     }
 });
 
-// Get all sessions
-router.get('/', async (req, res) => {  // No need for '/splid' here
+// Invite user to session via link
+router.get('/join/:sessionId', authMiddleware, async (req, res) => {
     try {
-        const sessions = await Session.find().sort({ createdAt: -1 });
+        const { sessionId } = req.params;
+        const session = await Session.findById(sessionId);
+        if (!session) return res.status(404).json({ message: 'Session not found' });
+
+        if (!session.participants.includes(req.user._id)) {
+            session.participants.push(req.user._id);
+            await session.save();
+        }
+        res.status(200).json({ message: 'User added to session', session });
+    } catch (error) {
+        console.error('Error joining session:', error);
+        res.status(500).json({ error: 'Error joining session', details: error.message });
+    }
+});
+
+// Get all sessions
+router.get('/', async (req, res) => {
+    try {
+        const sessions = await Session.find().populate("participants").sort({ createdAt: -1 });
         console.log(`Retrieved ${sessions.length} sessions`);
         res.status(200).json(sessions);
     } catch (error) {

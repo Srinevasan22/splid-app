@@ -44,81 +44,57 @@ mongoose
 // Middleware to parse JSON
 app.use(express.json());
 app.use(helmet());
-app.use(express.urlencoded({ extended: true })); // ✅ Ensures URL-encoded form data is parsed
+app.use(express.urlencoded({ extended: true }));
 
 // Use morgan for logging HTTP requests in development mode
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// Conditional CORS setup for development or if NGINX is not handling CORS
+// Conditional CORS setup
 if (process.env.NODE_ENV === 'development' || process.env.CORS_ENABLED === 'true') {
   logger.info('CORS is enabled in the Node.js app');
   app.use(
     cors({
-      origin: 'https://srinevasan.com', // Allow only requests from this origin
-      methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'], // Specify allowed methods
-      allowedHeaders: ['Content-Type', 'Authorization'], // Specify allowed headers
-      credentials: true, // Allow credentials to be sent if necessary
+      origin: 'https://srinevasan.com',
+      methods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
+      credentials: true,
     })
   );
 }
 
-// Routes for Session, Participant, and Expense
+// Routes
 const sessionRoute = require('./routes/session');
-app.use('/sessions', sessionRoute);  // /sessions routes for session-related actions
+app.use('/sessions', sessionRoute);
 
-// Participant route under session hierarchy
-const participantRoute = require("./routes/participant");
-const sessionRouter = express.Router({ mergeParams: true }); // Ensure params are accessible
-
-console.log("✅ Setting up session routes...");
-sessionRouter.use("/:sessionId/participants", participantRoute);
-app.use("/sessions", sessionRouter);
-
-console.log("✅ Session routes fully loaded.");
-
-// Expense route under session hierarchy
+const participantRoute = require('./routes/participant');
 const expenseRoute = require('./routes/expense');
-const balanceRoute = require('./routes/balance'); // NEW Balance Route
-const participantRouter = express.Router({ mergeParams: true });
-
-console.log("✅ Setting up participant routes...");
-
-participantRouter.use('/:participantId/expenses', expenseRoute);  // Nest expenses under participants
-sessionRouter.use('/:sessionId/participants', participantRouter);
-app.use('/splid/sessions', sessionRouter);  // Main route
-
-// ✅ Register standalone expense route
-app.use('/sessions/:sessionId/expenses', expenseRoute); 
-
-// ✅ Register the missing balance route separately
-app.use('/sessions/:sessionId/balances', balanceRoute);
-
-console.log("✅ Participant and expense routes fully loaded.");
-
-// Add other routes (Report, ActivityLog, etc.) in the same manner
-const reportRoute = require('./routes/report');
-app.use('/reports', reportRoute);  // /reports routes for reporting actions
-
-const userRoute = require('./routes/user');
-app.use('/users', userRoute);  // /users routes for user-related actions
-
-const activityLogRoute = require('./routes/activityLog');
-app.use('/logs', activityLogRoute);  // /logs routes for activity logs
-
 const settlementRoute = require('./routes/settlement');
 
-console.log("✅ Registering settlement routes...");
-sessionRouter.use('/:sessionId', settlementRoute); // Attach settlement under session
-app.use('/sessions/:sessionId/settle-up', settlementRoute);  // Ensure `splid/sessions/:sessionId/settle-up` is registered
-console.log("✅ Settlement routes fully loaded.");
+// Register participant routes under session hierarchy
+app.use('/sessions/:sessionId/participants', participantRoute);
+
+// Register expense routes under session hierarchy
+app.use('/sessions/:sessionId/expenses', expenseRoute);
+
+// Register settlement routes under session hierarchy
+app.use('/sessions/:sessionId/settlements', settlementRoute);
+
+const reportRoute = require('./routes/report');
+app.use('/reports', reportRoute);
+
+const userRoute = require('./routes/user');
+app.use('/users', userRoute);
+
+const activityLogRoute = require('./routes/activityLog');
+app.use('/logs', activityLogRoute);
 
 const transactionRoute = require('./routes/transaction');
-app.use('/transactions', transactionRoute);  // /transactions routes for transaction actions
+app.use('/transactions', transactionRoute);
 
 const notificationRoute = require('./routes/notification');
-app.use('/notifications', notificationRoute);  // /notifications routes for notification actions
+app.use('/notifications', notificationRoute);
 
 // Health check route to verify server is running
 app.get('/health', (req, res) => {

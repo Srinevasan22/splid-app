@@ -14,6 +14,7 @@ const authRoute = require('./routes/auth');
 const app = express();
 
 require('./models/usermodel');  // ✅ Ensures User model is registered
+require('dotenv').config();
 
 // ✅ Ensure JSON Parsing Middleware is Enabled
 app.use(express.json());  

@@ -4,24 +4,26 @@ const Session = require('../models/sessionmodel'); // Updated to lowercase
 // Add a new session
 exports.addSession = async (req, res) => {
     try {
-        const { name } = req.body;  // Removed groupId, since it's no longer needed
-        const email = req.user.email;  // ✅ Use email for session association
+        const { name } = req.body;
 
-        // ✅ Ensure name is provided
+        if (!req.user || !req.user.email) {
+            return res.status(400).json({ message: "Authentication failed. User email is required." });
+        }
+
+        const email = req.user.email;  // ✅ Extract user email from authentication
+
         if (!name) {
             return res.status(400).json({ message: "Session name is required" });
         }
 
-        // ✅ Check if session already exists for this user
+        // ✅ Check if session with this name already exists for this email
         const existingSession = await Session.findOne({ name, email });
         if (existingSession) {
             return res.status(409).json({ message: "A session with this name already exists for this user." });
         }
 
-        // ✅ Create a new session with name and email
-        const newSession = new Session({ name, email, participants: [email] }); // ✅ Add user to participants automatically
+        const newSession = new Session({ name, email, participants: [email] });
 
-        // Save the new session to the database
         await newSession.save();
 
         res.status(201).json({ message: "Session created successfully", session: newSession });
@@ -30,6 +32,7 @@ exports.addSession = async (req, res) => {
         res.status(500).json({ message: "Error creating session", error: error.message });
     }
 };
+
 
 // Get sessions for a specific user by email
 exports.getUserSessions = async (req, res) => {

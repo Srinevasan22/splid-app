@@ -38,7 +38,7 @@ exports.sendMagicLink = async (req, res) => {
             }
         });
 
-        const loginUrl = `https://yourapp.com/login?token=${token}`;
+        const loginUrl = `https://srinevasan.com/login?token=${token}`;
 
         await transporter.sendMail({
             to: email,

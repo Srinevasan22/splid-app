@@ -5,12 +5,12 @@ const sessionSchema = new mongoose.Schema({
         type: String, 
         required: true
     }, 
-    email: {  // ✅ Ensure email is properly set
+    email: {  // Ensure email is properly set
         type: String,
         required: true
     },
     participants: [{  
-        type: String,  // ✅ Ensure participants field allows emails
+        type: String,  // Ensure participants field allows emails
     }],
     createdAt: { 
         type: Date, 

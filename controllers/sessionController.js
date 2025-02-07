@@ -4,7 +4,6 @@ const Session = require('../models/sessionmodel');
 exports.addSession = async (req, res) => {
     try {
         console.log("🔍 Checking user authentication:", req.user);
-
         const { name } = req.body;
 
         if (!req.user || !req.user.email) {
@@ -12,7 +11,7 @@ exports.addSession = async (req, res) => {
             return res.status(401).json({ message: "Unauthorized. User email is missing in authentication." });
         }
 
-        const email = req.user.email || "no-email@example.com"; // ✅ Ensure email is never undefined
+        const email = req.user.email || "no-email@example.com";  // Ensure email is never undefined
         console.log("✅ Final Email to be saved:", email);
 
         if (!name) {
@@ -26,7 +25,7 @@ exports.addSession = async (req, res) => {
 
         const newSession = new Session({
             name: name,
-            email: email, // ✅ Now email is always defined
+            email: email,  // Make sure this is passed to the model
             participants: [email],
         });
 

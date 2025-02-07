@@ -27,7 +27,7 @@ exports.addSession = async (req, res) => {
             return res.status(409).json({ message: "A session with this name already exists for this user." });
         }
 
-        // ✅ Create a new session with the extracted email
+        // ✅ Debugging: Ensure email is correctly added to the new session
         const newSession = new Session({
             name: name,
             email: email, // 🔍 Ensure this field is being set

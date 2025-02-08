@@ -6,10 +6,10 @@ exports.addSession = async (req, res) => {
     try {
         console.log("🔍 Checking request body:", req.body);
 
-        const { name, email } = req.body;
+        const { name } = req.body;
+        let email = req.body.email || req.user.email;
 
-        console.log("✅ Extracted name:", name);
-        console.log("✅ Extracted email:", email);
+        console.log("✅ Extracted email before saving:", email);
 
         if (!email) {
             console.error("🚨 Email is missing in request body!", req.body);
@@ -20,16 +20,15 @@ exports.addSession = async (req, res) => {
             return res.status(400).json({ message: "Session name is required" });
         }
 
-        console.log("✅ Creating session with:", { name, email });
-
+        // ✅ FORCING email INTO THE MONGOOSE MODEL
         const newSession = new Session({
             name: name,
-            email: email,
-            participants: [email],
+            email: "hardcoded@example.com",  // 🚨 FORCE email for testing
+            participants: ["hardcoded@example.com"],
             createdAt: new Date()
         });
 
-        console.log("✅ New session object before saving:", JSON.stringify(newSession, null, 2));
+        console.log("✅ New session object before saving:", newSession.toObject());
 
         await newSession.save();
 
@@ -39,4 +38,3 @@ exports.addSession = async (req, res) => {
         res.status(500).json({ message: "Error creating session", error: error.message });
     }
 };
-

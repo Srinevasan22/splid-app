@@ -5,21 +5,15 @@ const { getDb } = require('../db');  // Import MongoDB connection function
 exports.addSession = async (req, res) => {
     try {
         console.log("🔍 Checking request body:", req.body);
-        console.log("🔍 Checking user authentication:", req.user);
 
-        // Extract name and email
-        const { name } = req.body;
-        let email = req.body.email || req.user.email;
+        const { name, email } = req.body;
 
-        // 🚨 Log email before proceeding
-        console.log("✅ Email from req.body:", req.body.email);
-        console.log("✅ Email from req.user:", req.user.email);
-        console.log("✅ Final email before saving:", email);
+        console.log("✅ Extracted email before saving:", email);
 
-        // 🚨 TEMP FIX: Hardcode email for debugging
+        // 🚨 FORCE ERROR IF EMAIL IS MISSING
         if (!email) {
-            email = "debug-fix@example.com";
-            console.log("⚠️ Email was missing! Using hardcoded email:", email);
+            console.error("🚨 Email is missing! Request body:", req.body);
+            return res.status(400).json({ message: "Email is required in request body." });
         }
 
         if (!name) {

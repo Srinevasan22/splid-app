@@ -5,30 +5,37 @@ const { getDb } = require('../db');  // Import MongoDB connection function
 exports.addSession = async (req, res) => {
     try {
         console.log("🔍 Checking request body:", req.body);
+        console.log("🔍 Checking user authentication:", req.user);
 
+        // Extract name and email
         const { name } = req.body;
         let email = req.body.email || req.user.email;
 
-        console.log("✅ Extracted email before saving:", email);
+        // 🚨 Log email before proceeding
+        console.log("✅ Email from req.body:", req.body.email);
+        console.log("✅ Email from req.user:", req.user.email);
+        console.log("✅ Final email before saving:", email);
 
+        // 🚨 TEMP FIX: Hardcode email for debugging
         if (!email) {
-            console.error("🚨 Email is missing in request body!", req.body);
-            return res.status(400).json({ message: "Email is required in request body." });
+            email = "debug-fix@example.com";
+            console.log("⚠️ Email was missing! Using hardcoded email:", email);
         }
 
         if (!name) {
             return res.status(400).json({ message: "Session name is required" });
         }
 
-        // ✅ FORCING email INTO THE MONGOOSE MODEL
+        console.log("✅ Creating session with:", { name, email });
+
         const newSession = new Session({
             name: name,
-            email: "hardcoded@example.com",  // 🚨 FORCE email for testing
-            participants: ["hardcoded@example.com"],
+            email: email,
+            participants: [email],
             createdAt: new Date()
         });
 
-        console.log("✅ New session object before saving:", newSession.toObject());
+        console.log("✅ New session object before saving:", JSON.stringify(newSession, null, 2));
 
         await newSession.save();
 

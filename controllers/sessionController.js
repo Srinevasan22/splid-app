@@ -1,20 +1,16 @@
 exports.addSession = async (req, res) => {
     try {
         console.log("🔍 Checking request body:", req.body);
-        console.log("🔍 Checking user authentication:", req.user);
 
-        // Extract name and email
-        const { name } = req.body;
-        let email = req.body.email || req.user.email;
+        // Extract name and email from request body instead of relying on JWT
+        const { name, email } = req.body;
 
         // 🚨 Log email before proceeding
-        console.log("✅ Email from req.body:", req.body.email);
-        console.log("✅ Email from req.user:", req.user.email);
-        console.log("✅ Final email being used:", email);
+        console.log("✅ Email from req.body:", email);
 
         // If email is missing, return an error
         if (!email) {
-            console.error("🚨 Email is missing in request body AND req.user!", req.body, req.user);
+            console.error("🚨 Email is missing in request body!", req.body);
             return res.status(400).json({ message: "Email is required in request body." });
         }
 
@@ -34,20 +30,8 @@ exports.addSession = async (req, res) => {
 
         console.log("✅ New session object before saving:", newSession.toObject());
 
-        // Validate before saving
-        newSession.validate((error) => {
-            if (error) {
-                console.error("❌ Validation failed:", error.errors);
-                return res.status(400).json({ message: "Session validation failed", error: error.errors });
-            } else {
-                console.log("✅ Session is ready to be saved!");
-            }
-        });
-
-        // 🚨 Hardcoded email test (uncomment if debugging)
-        // newSession.email = "debug-email@example.com";
-
         await newSession.save();
+
         res.status(201).json({ message: "Session created successfully", session: newSession });
     } catch (error) {
         console.error("❌ Error creating session:", error);

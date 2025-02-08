@@ -1,9 +1,10 @@
 const express = require('express');
+const cors = require('cors'); // CORS middleware
+const helmet = require('helmet'); // Security headers
+const morgan = require('morgan'); // HTTP request logging
 const mongoose = require('mongoose'); // MongoDB connection
 const cors = require('cors'); // CORS middleware
 const PDFDocument = require('pdfkit'); // PDF generation
-const morgan = require('morgan'); // HTTP request logging
-const helmet = require('helmet'); // Security headers
 const winston = require('winston'); // Logging
 const net = require('net'); // Used for port checking
 const portfinder = require('portfinder'); // Automatically find available port
@@ -11,10 +12,10 @@ const fs = require('fs');
 const { exec } = require('child_process');
 const authRoute = require('./routes/auth');
 
-const app = express();
-
 require('./models/usermodel');  // ✅ Ensures User model is registered
 require('dotenv').config();
+
+const app = express();
 
 // ✅ Ensure JSON Parsing Middleware is Enabled
 app.use(express.json());  

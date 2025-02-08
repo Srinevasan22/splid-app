@@ -4,13 +4,19 @@ const { getDb } = require('../db');  // Import MongoDB connection function
 
 exports.addSession = async (req, res) => {
     try {
-        console.log("🔍 Checking request body:", req.body);
+        console.log("🔍 Full request headers:", req.headers);
+        console.log("🔍 Full request body:", req.body);
 
         const { name, email } = req.body;
 
         console.log("✅ Extracted email before saving:", email);
 
-        // 🚨 FORCE ERROR IF EMAIL IS MISSING
+        // 🚨 If `req.body` is empty, Express is not parsing it properly
+        if (!req.body || Object.keys(req.body).length === 0) {
+            console.error("🚨 ERROR: `req.body` is empty! Check if Express `body-parser` is working.");
+            return res.status(400).json({ message: "Invalid request: Request body is empty." });
+        }
+
         if (!email) {
             console.error("🚨 Email is missing! Request body:", req.body);
             return res.status(400).json({ message: "Email is required in request body." });

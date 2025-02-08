@@ -22,3 +22,4 @@ const sessionSchema = new mongoose.Schema({
 mongoose.models = {};  // Clear cached models
 const Session = mongoose.model('Session', sessionSchema);
 module.exports = Session;
+delete mongoose.connection.models["Session"]; // Force Mongoose to reload the schema

@@ -1,17 +1,18 @@
 const { MongoClient } = require("mongodb");
 require("dotenv").config();
 
-// Connect to MongoDB (Ensure URI is set in `.env` file)
 const mongoURI = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const dbName = "splidDB"; // Your database name
 let db;
 
+// ✅ Connect to MongoDB and Store the Connection
 MongoClient.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(client => {
         console.log("✅ Connected to MongoDB (Native Driver)");
         db = client.db(dbName);
     })
     .catch(error => console.error("❌ MongoDB Connection Error:", error));
+
 
 exports.addSession = async (req, res) => {
     try {
@@ -35,7 +36,7 @@ exports.addSession = async (req, res) => {
 
         console.log("✅ Creating session with:", { name, email });
 
-        const db = require("../db").getDb(); // Get direct MongoDB connection
+        // ✅ Use the `db` variable that was already created at the top
         const result = await db.collection("sessions").insertOne({
             name,
             email,

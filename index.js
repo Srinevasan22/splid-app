@@ -3,7 +3,6 @@ const cors = require('cors'); // CORS middleware
 const helmet = require('helmet'); // Security headers
 const morgan = require('morgan'); // HTTP request logging
 const mongoose = require('mongoose'); // MongoDB connection
-const cors = require('cors'); // CORS middleware
 const PDFDocument = require('pdfkit'); // PDF generation
 const winston = require('winston'); // Logging
 const net = require('net'); // Used for port checking

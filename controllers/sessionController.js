@@ -1,14 +1,16 @@
+const mongoose = require('mongoose');
+const Session = require('../models/sessionmodel');
+const { getDb } = require('../db');  // Import MongoDB connection function
+
 exports.addSession = async (req, res) => {
     try {
         console.log("🔍 Checking request body:", req.body);
 
-        // Extract name and email from request body instead of relying on JWT
         const { name, email } = req.body;
 
-        // 🚨 Log email before proceeding
-        console.log("✅ Email from req.body:", email);
+        console.log("✅ Extracted name:", name);
+        console.log("✅ Extracted email:", email);
 
-        // If email is missing, return an error
         if (!email) {
             console.error("🚨 Email is missing in request body!", req.body);
             return res.status(400).json({ message: "Email is required in request body." });
@@ -18,17 +20,16 @@ exports.addSession = async (req, res) => {
             return res.status(400).json({ message: "Session name is required" });
         }
 
-        // Log session details before saving
         console.log("✅ Creating session with:", { name, email });
 
         const newSession = new Session({
             name: name,
-            email: email, // Explicitly pass email
+            email: email,
             participants: [email],
             createdAt: new Date()
         });
 
-        console.log("✅ New session object before saving:", newSession.toObject());
+        console.log("✅ New session object before saving:", JSON.stringify(newSession, null, 2));
 
         await newSession.save();
 
@@ -38,3 +39,4 @@ exports.addSession = async (req, res) => {
         res.status(500).json({ message: "Error creating session", error: error.message });
     }
 };
+

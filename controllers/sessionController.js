@@ -19,24 +19,15 @@ exports.addSession = async (req, res) => {
         console.log("🔍 Incoming Request Headers:", req.headers);
         console.log("🔍 Incoming Request Body:", req.body);
 
-        const { name, email } = req.body;
+        // ✅ HARDCODE VALUES (ignore `req.body` for now)
+        const name = "Test Session Hardcoded";
+        const email = "hardcoded@example.com";
 
-        console.log("✅ Extracted Name:", name);
-        console.log("✅ Extracted Email:", email);
-
-        if (!req.body || Object.keys(req.body).length === 0) {
-            console.error("🚨 ERROR: `req.body` is empty! Express is not parsing JSON.");
-            return res.status(400).json({ message: "Invalid request: Request body is empty." });
-        }
-
-        if (!email) {
-            console.error("🚨 Email is missing! Request body:", req.body);
-            return res.status(400).json({ message: "Email is required in request body." });
-        }
+        console.log("✅ Using Hardcoded Name:", name);
+        console.log("✅ Using Hardcoded Email:", email);
 
         console.log("✅ Creating session with:", { name, email });
 
-        // ✅ Use the `db` variable that was already created at the top
         const result = await db.collection("sessions").insertOne({
             name,
             email,

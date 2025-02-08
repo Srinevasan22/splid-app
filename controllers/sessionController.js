@@ -1,21 +1,23 @@
-const mongoose = require('mongoose');
-const Session = require('../models/sessionmodel');
-const { getDb } = require('../db');  // Import MongoDB connection function
+const { MongoClient } = require("mongodb");
+require("dotenv").config();
+
+// Connect to MongoDB (Ensure URI is set in `.env` file)
+const mongoURI = process.env.MONGODB_URI || "mongodb://localhost:27017";
+const dbName = "splidDB"; // Your database name
+let db;
+
+MongoClient.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(client => {
+        console.log("✅ Connected to MongoDB (Native Driver)");
+        db = client.db(dbName);
+    })
+    .catch(error => console.error("❌ MongoDB Connection Error:", error));
 
 exports.addSession = async (req, res) => {
     try {
-        console.log("🔍 Full request headers:", req.headers);
-        console.log("🔍 Full request body:", req.body);
+        console.log("🔍 Incoming request body:", req.body);
 
         const { name, email } = req.body;
-
-        console.log("✅ Extracted email before saving:", email);
-
-        // 🚨 If `req.body` is empty, Express is not parsing it properly
-        if (!req.body || Object.keys(req.body).length === 0) {
-            console.error("🚨 ERROR: `req.body` is empty! Check if Express `body-parser` is working.");
-            return res.status(400).json({ message: "Invalid request: Request body is empty." });
-        }
 
         if (!email) {
             console.error("🚨 Email is missing! Request body:", req.body);
@@ -28,18 +30,16 @@ exports.addSession = async (req, res) => {
 
         console.log("✅ Creating session with:", { name, email });
 
-        const newSession = new Session({
-            name: name,
-            email: email,
+        const result = await db.collection("sessions").insertOne({
+            name,
+            email,
             participants: [email],
-            createdAt: new Date()
+            createdAt: new Date(),
         });
 
-        console.log("✅ New session object before saving:", JSON.stringify(newSession, null, 2));
+        console.log("✅ Session created successfully:", result.ops[0]);
 
-        await newSession.save();
-
-        res.status(201).json({ message: "Session created successfully", session: newSession });
+        res.status(201).json({ message: "Session created successfully", session: result.ops[0] });
     } catch (error) {
         console.error("❌ Error creating session:", error);
         res.status(500).json({ message: "Error creating session", error: error.message });

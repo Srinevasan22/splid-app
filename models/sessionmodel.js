@@ -5,12 +5,12 @@ const sessionSchema = new mongoose.Schema({
         type: String, 
         required: true
     },
-    email: {  // Ensure email is properly set
+    email: {  
         type: String,
         required: true
     },
     participants: [{  
-        type: String,  // Ensure participants field allows emails
+        type: String,  
     }],
     createdAt: { 
         type: Date, 
@@ -18,5 +18,5 @@ const sessionSchema = new mongoose.Schema({
     }
 });
 
-const Session = mongoose.model('session', sessionSchema);
+const Session = mongoose.model('Session', sessionSchema); // <-- Ensure model name is properly capitalized
 module.exports = Session;

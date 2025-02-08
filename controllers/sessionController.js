@@ -15,21 +15,27 @@ MongoClient.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true 
 
 exports.addSession = async (req, res) => {
     try {
-        console.log("🔍 Incoming request body:", req.body);
+        console.log("🔍 Incoming Request Headers:", req.headers);
+        console.log("🔍 Incoming Request Body:", req.body);
 
         const { name, email } = req.body;
+
+        console.log("✅ Extracted Name:", name);
+        console.log("✅ Extracted Email:", email);
+
+        if (!req.body || Object.keys(req.body).length === 0) {
+            console.error("🚨 ERROR: `req.body` is empty! Express is not parsing JSON.");
+            return res.status(400).json({ message: "Invalid request: Request body is empty." });
+        }
 
         if (!email) {
             console.error("🚨 Email is missing! Request body:", req.body);
             return res.status(400).json({ message: "Email is required in request body." });
         }
 
-        if (!name) {
-            return res.status(400).json({ message: "Session name is required" });
-        }
-
         console.log("✅ Creating session with:", { name, email });
 
+        const db = require("../db").getDb(); // Get direct MongoDB connection
         const result = await db.collection("sessions").insertOne({
             name,
             email,

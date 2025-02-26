@@ -41,21 +41,52 @@ const mongoURI = process.env['MONGODB_URI'] || 'mongodb://localhost:27017/splidD
 
 // MongoDB connection with enhanced logging
 mongoose
-  .connect(mongoURI, {
-    serverSelectionTimeoutMS: 10000, // Wait max 10 sec for initial connection
-    socketTimeoutMS: 45000, // Avoid long query hangs
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    logger.info('✅ Successfully connected to MongoDB');
-    console.log('✅ Successfully connected to MongoDB');
-  })
-  .catch((err) => {
-    logger.error('❌ Failed to connect to MongoDB', err);
-    console.error('❌ Failed to connect to MongoDB', err);
-    process.exit(1); // Exit if MongoDB connection fails
+.connect(mongoURI, {
+  serverSelectionTimeoutMS: 10000, // Wait up to 10 seconds for initial connection
+  socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => {
+  logger.info('✅ Successfully connected to MongoDB');
+  console.log('✅ Successfully connected to MongoDB');
+
+  // Start the server only after successful MongoDB connection
+  portfinder.basePort = 3000;
+  portfinder.getPort((err, port) => {
+    if (err) {
+      console.error('Error finding an available port:', err);
+      process.exit(1);
+    }
+
+    app.listen(port, '127.0.0.1', () => {
+      logger.info(`Server is running on http://127.0.0.1:${port}`);
+      console.log(`Server is running on http://127.0.0.1:${port}`);
+
+      // Store the assigned port in a file so NGINX can read it
+      fs.writeFileSync('/root/splid_app/api_port.txt', port.toString());
+
+      // Run the script to update NGINX with the new port
+      exec('/root/update_nginx.sh', (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error updating NGINX: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.error(`NGINX update stderr: ${stderr}`);
+          return;
+        }
+        console.log(`NGINX updated successfully: ${stdout}`);
+      });
+    });
   });
+})
+.catch((err) => {
+  logger.error('❌ Failed to connect to MongoDB', err);
+  console.error('❌ Failed to connect to MongoDB', err);
+  process.exit(1); // Exit if MongoDB connection fails
+});
+
 
 // Monitor connection state
 mongoose.connection.on('connected', () => {

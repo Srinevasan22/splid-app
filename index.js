@@ -149,15 +149,14 @@ portfinder.getPort((err, port) => {
 
 // Graceful Shutdown Hook
 process.on('SIGINT', async () => {
-  logger.info('Shutting down gracefully...');
-  try {
-    await mongoose.disconnect();
-    logger.info('Disconnected from MongoDB');
-    process.exit(0);
-  } catch (error) {
-    logger.error('Error during shutdown:', error);
-    process.exit(1);
-  }
+   logger.info('Shutting down gracefully...');
+   try {
+       logger.info('Closing MongoDB connection...');
+       process.exit(0);
+   } catch (error) {
+       logger.error('Error during shutdown:', error);
+       process.exit(1);
+   }
 });
 
 console.log("✅ Final listing of ALL registered routes:");

@@ -20,11 +20,11 @@ exports.addSession = async (req, res) => {
         console.log("🔍 Incoming Request Body:", req.body);
 
         // ✅ HARDCODE VALUES (ignore `req.body` for now)
-        const name = "Test Session Hardcoded";
-        const email = "hardcoded@example.com";
+        const { name, email } = req.body;
 
-        console.log("✅ Using Hardcoded Name:", name);
-        console.log("✅ Using Hardcoded Email:", email);
+        if (!email) {
+            return res.status(400).json({ error: "Email is required" });
+        }
 
         console.log("✅ Creating session with:", { name, email });
 

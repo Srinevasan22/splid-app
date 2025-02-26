@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 
+if (!mongoose.connection.readyState) {
+  console.error("⚠️ Mongoose is not connected yet. Delaying User model initialization.");
+}
+
 const userSchema = new mongoose.Schema({
   userToken: { 
     type: String, 
@@ -23,5 +27,7 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-const User = mongoose.model('user', userSchema);
+// Prevent duplicate model registration in case of hot reloads
+const User = mongoose.models.User || mongoose.model("User", userSchema);
+
 module.exports = User;
